@@ -3,22 +3,29 @@ package com.trendora.tienda.usuario.controller;
 //
 // ¡AQUÍ ESTÁ EL CAMBIO! La ruta al DTO es más específica.
 //
-import com.trendora.tienda.usuario.dto.usuario.UsuarioListDTO;
-import com.trendora.tienda.usuario.dto.usuario.UsuarioRequestDTO;
-import com.trendora.tienda.usuario.dto.usuario.UsuarioResponseDTO;
-
-// (El resto de las importaciones son las mismas)
-import com.trendora.tienda.usuario.service.UsuarioService;
-import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import java.net.URI;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.trendora.tienda.usuario.dto.usuario.UsuarioListDTO;
+import com.trendora.tienda.usuario.dto.usuario.UsuarioRequestDTO;
+import com.trendora.tienda.usuario.dto.usuario.UsuarioResponseDTO;
+import com.trendora.tienda.usuario.service.UsuarioService;
+
+import jakarta.validation.Valid;
+
 @RestController
-@RequestMapping("/usuario/usuario/")
+@RequestMapping("/usuario/usuario")
 public class UsuarioController {
 
     @Autowired

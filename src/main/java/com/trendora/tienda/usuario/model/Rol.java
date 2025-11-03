@@ -1,7 +1,8 @@
 package com.trendora.tienda.usuario.model;
+//librerias core
 import jakarta.persistence.*;
-import lombok.Builder;
 import lombok.*;
+//librerias core
 
 
 @Entity

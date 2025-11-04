@@ -28,22 +28,22 @@ public class Venta {
 
     @Column(name = "numero_venta", nullable = false, unique = true)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long numero_venta;
+    private Long numeroVenta;
 
     @Column(name = "fecha_venta", nullable = false)
-    private LocalDateTime fecha_venta;
+    private LocalDateTime fechaVenta;
 
     @Column(name = "monto_total", nullable = false)
-    private Double monto_total;
+    private Double montoTotal;
 
     @Column(name = "metodo_pago", nullable = false)
-    private String metodo_pago; //tajeta, efectivo, QR
+    private String metodoPago; //tajeta, efectivo, QR
 
     @Column(name = "tipo_venta", nullable = false) 
-    private String tipo_venta; //online, presencial
+    private String tipoVenta; //online, presencial
 
     @Column(name = "estado_pedido", nullable = false)
-    private String estado_pedido;  //pendiente, enviado, entregado, cancelado
+    private String estadoPedido;  //pendiente, enviado, entregado, cancelado
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "cliente_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_usuario_cli"))
@@ -57,9 +57,9 @@ public class Venta {
     
     @PrePersist
     private void prePersist() {
-        this.fecha_venta = LocalDateTime.now();
-        this.monto_total = 0.0;
-        this.estado_pedido = "pendiente";
+        this.fechaVenta = LocalDateTime.now();
+        this.montoTotal = 0.0;
+        this.estadoPedido = "pendiente";
     }
 
 }

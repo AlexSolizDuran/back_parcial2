@@ -5,9 +5,11 @@ import lombok.*;
 //librerias core
 
 
+
 @Entity
 @Table(name = "rol") 
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

@@ -34,7 +34,7 @@ public class Notificaciones {
     private LocalDateTime fecha;
 
     //la realacion con usuario N:1
-    @ManyToOne(fetch = FetchType.EAGER, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "usuario_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_usuario"))
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Usuario usuario;

@@ -29,7 +29,7 @@ public class Carrito {
     @Column(name = "estado", nullable = false)
     private String estado; //pendiente, completado, cancelado(abandonado)
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cliente_id", referencedColumnName = "id", nullable = false, foreignKey = @ForeignKey(name = "fk_usuario_car"))
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Usuario cliente;

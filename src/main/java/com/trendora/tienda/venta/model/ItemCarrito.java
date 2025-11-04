@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
+import com.trendora.tienda.inventario.model.ProdVariante;
+
 //librerias core
 import jakarta.persistence.*;
 import lombok.*;
@@ -26,12 +28,15 @@ public class ItemCarrito {
     @Column(name = "fecha", nullable = false)
     private LocalDateTime fecha;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "carrito_id", nullable = false, referencedColumnName = "id" ,foreignKey = @ForeignKey(name = "fk_carrito"))
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Carrito carrito;
 
-    //private PruductoVariante productoVariante;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "prod_variante_id", nullable = false, referencedColumnName = "id" ,foreignKey = @ForeignKey(name = "fk_prod_variante"))
+    @OnDelete(action = OnDeleteAction.CASCADE)
+    private ProdVariante prodVariante;
 
     @PrePersist
     private void prePersist() {

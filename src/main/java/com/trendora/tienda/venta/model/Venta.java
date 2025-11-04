@@ -13,7 +13,6 @@ import org.hibernate.annotations.OnDeleteAction;
 
 import com.trendora.tienda.usuario.model.Usuario;
 
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "venta")

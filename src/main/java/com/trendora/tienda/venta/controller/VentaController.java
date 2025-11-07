@@ -35,7 +35,7 @@ public class VentaController {
         this.ventaService = ventaService;
     }
 
-    @GetMapping// por defecto /api/ventas
+    @GetMapping// por defecto /venta/venta
     public ResponseEntity<List<VentaResponseDTO>> getAllVentas() { //get todas las ventas 
         List<VentaResponseDTO> ventas = ventaService.listarTodo().stream().map(ventaService::convertToResponseDTO).toList();
         return ResponseEntity.ok(ventas);
@@ -43,11 +43,12 @@ public class VentaController {
     
     @GetMapping("/{id}")
     public ResponseEntity<VentaResponseDTO> getVentaById(@PathVariable Long id){ // get por id de venta
-        Optional<VentaResponseDTO> venta = ventaService.buscarById(id).map(ventaService::convertToResponseDTO);
+        Optional<VentaResponseDTO> venta = ventaService.buscarById(id)
+        .map(ventaService::convertToResponseDTO);
         return venta.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping // por defecto /api/ventas
+    @PostMapping // por defecto /venta/venta
     public ResponseEntity<VentaResponseDTO> crearVenta(@RequestBody VentaRequestDTO ventaRequestDTO) {
         //TODO: process POST request
         VentaResponseDTO ventaCreada = ventaService.create(ventaRequestDTO);

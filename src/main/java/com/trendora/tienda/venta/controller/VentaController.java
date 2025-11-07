@@ -1,6 +1,5 @@
 package com.trendora.tienda.venta.controller;
 
-import org.springframework.stereotype.Controller;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +23,7 @@ import java.util.stream.Collectors;
 
 
 
-@Controller
+@RestController
 @RequestMapping("/venta/venta")
 public class VentaController {
 

@@ -52,4 +52,8 @@ public class ProdVariante {
 
     @Column(nullable = false)
     private Integer stock;
+
+    public ProdVariante(Long id){
+        this.id = id;
+    }
 }

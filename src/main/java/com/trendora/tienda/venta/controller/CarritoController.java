@@ -6,20 +6,23 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.trendora.tienda.usuario.model.Usuario;
 import com.trendora.tienda.venta.dto.carrito.CarritoRequestDTO;
 import com.trendora.tienda.venta.dto.carrito.CarritoResponseDTO;
 import com.trendora.tienda.venta.service.interfaces.ICarritoService;
+
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 
-@Controller
+@RestController
 @RequestMapping("/venta/carrito")
 public class CarritoController {
     @Autowired
@@ -50,6 +53,21 @@ public class CarritoController {
         return new ResponseEntity<>(carritoCreado, HttpStatus.CREATED);
     }
 
-    
+    @DeleteMapping
+    public ResponseEntity<CarritoResponseDTO> eliminarCarrito(@RequestParam Long id){
+        if(carritoService.buscarById(id).isPresent()){
+            carritoService.eliminar(id);
+            return ResponseEntity.noContent().build();
+        }else{
+            return ResponseEntity.noContent().build();
+        }
+    }
 
+    @GetMapping("/porcliente/{id}")
+    public ResponseEntity<List<CarritoResponseDTO>> getCarritoByCliente(@PathVariable Long id){
+        List<CarritoResponseDTO> listaCarrito = carritoService.buscarByCliente(new Usuario(id))
+        .stream()
+        .map(carritoService::convertToResponseDTO).toList();
+        return ResponseEntity.ok(listaCarrito);
+    }
 }

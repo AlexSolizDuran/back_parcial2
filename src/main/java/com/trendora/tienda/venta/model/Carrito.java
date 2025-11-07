@@ -39,4 +39,8 @@ public class Carrito {
         this.fecha = LocalDateTime.now();
         this.estado = "pendiente";
     }
+
+    public Carrito(Long id){
+        this.id = id;
+    }
 }

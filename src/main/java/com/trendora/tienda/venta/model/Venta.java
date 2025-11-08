@@ -51,7 +51,7 @@ public class Venta {
     private Usuario cliente;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "vendedor_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_usuario_ven"))
+    @JoinColumn(name = "vendedor_id", nullable = true, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_usuario_ven"))
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Usuario vendedor;
     

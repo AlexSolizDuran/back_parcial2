@@ -79,7 +79,7 @@ public class ItemCarritoService implements IItemCarritoService{
     public ItemCarritoResponseDTO create(ItemCarritoRequestDTO dto) {
         // TODO Auto-generated method stub
         ItemCarrito itemCarrito  = convertToEntity(dto);
-        itemCarritoRepository.save(itemCarrito);
+        itemCarrito=itemCarritoRepository.save(itemCarrito);
         return convertToResponseDTO(itemCarrito);
     }
 
@@ -87,10 +87,10 @@ public class ItemCarritoService implements IItemCarritoService{
     @Transactional
     public Optional<ItemCarritoResponseDTO> update(Long id, ItemCarritoRequestDTO dto) {
         // TODO Auto-generated method stub
-        return itemCarritoRepository.findById(id).map(itemcarrito -> {
-            updateEntityFromDTO(itemcarrito, dto);
-            itemCarritoRepository.save(itemcarrito);
-            return convertToResponseDTO(itemcarrito);
+        return itemCarritoRepository.findById(id).map(itemCarrito -> {
+            updateEntityFromDTO(itemCarrito, dto);
+            itemCarrito =itemCarritoRepository.save(itemCarrito);
+            return convertToResponseDTO(itemCarrito);
         });
     }
 

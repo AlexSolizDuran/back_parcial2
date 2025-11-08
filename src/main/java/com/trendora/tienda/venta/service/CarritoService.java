@@ -83,7 +83,7 @@ public class CarritoService implements ICarritoService{
     @Transactional
     public CarritoResponseDTO create(CarritoRequestDTO dto){
         Carrito carrito = convertToEntity(dto);
-        carritoRepository.save(carrito);
+        carrito=carritoRepository.save(carrito);
         return convertToResponseDTO(carrito);
     }
 
@@ -92,7 +92,7 @@ public class CarritoService implements ICarritoService{
     public Optional<CarritoResponseDTO> update(Long id, CarritoRequestDTO dto){
         return carritoRepository.findById(id).map(carrito -> {
             updateEntityFromDTO(carrito, dto);
-            carritoRepository.save(carrito);
+            carrito=carritoRepository.save(carrito);
             return convertToResponseDTO(carrito);
         });
     }

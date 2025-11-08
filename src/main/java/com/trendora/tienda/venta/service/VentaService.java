@@ -122,7 +122,7 @@ public class VentaService implements IVentaService {
     @Transactional
     public VentaResponseDTO create(VentaRequestDTO dto){
         Venta venta = convertToEntity(dto);
-        ventaRepository.save(venta);
+        venta=ventaRepository.save(venta);
         return convertToResponseDTO(venta);
     }
 
@@ -131,7 +131,7 @@ public class VentaService implements IVentaService {
     public Optional<VentaResponseDTO> update(Long id, VentaRequestDTO dto) {
         return ventaRepository.findById(id).map(venta -> {
             updateEntityFromDTO(venta, dto);
-            ventaRepository.save(venta);
+            venta=ventaRepository.save(venta);
             return convertToResponseDTO(venta);
         });
     }

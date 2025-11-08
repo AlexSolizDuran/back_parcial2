@@ -18,23 +18,23 @@ public class DetalleVenta {
     private Long id;
 
     @Column(name = "cantidad", nullable = false)
-    private Integer cantidad;
+    private Integer cantidad;//
 
     @Column(name = "precio_unit", nullable = false)
-    private Double precio_unit;
+    private Double precio_unit;//
 
     @Column(name = "descuento", nullable = false)
-    private Double descuento;
+    private Double descuento;//
     
     @Column(name = "subtotal", nullable = false)
-    private Double subtotal;
+    private Double subtotal;//
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "venta_id", nullable = false, referencedColumnName = "id" ,foreignKey = @ForeignKey(name = "fk_venta"))
-    private Venta venta;
+    private Venta venta;//
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "prod_variante_id", nullable = false, referencedColumnName = "id" ,foreignKey = @ForeignKey(name = "fk_prod_variante"))
-    private ProdVariante prodVariante;
+    private ProdVariante prodVariante;//
 
 }

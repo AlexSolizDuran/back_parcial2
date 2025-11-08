@@ -46,7 +46,7 @@ public class DetalleVentaService implements IDetalleVentaService{
     @Override
     public List<DetalleVentaResponseDTO> obtenerByVenta(Venta venta) {
         // TODO Auto-generated method stub
-        return detalleVentaRepository.findByVentas(venta).stream().map(this::convertToResponseDTO).toList();
+        return detalleVentaRepository.findByVenta(venta).stream().map(this::convertToResponseDTO).toList();
     }
 
     @Override

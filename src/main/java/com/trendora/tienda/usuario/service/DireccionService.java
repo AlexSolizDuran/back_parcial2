@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.trendora.tienda.usuario.dto.direccion.DireccionRequestDTO;
@@ -14,6 +15,7 @@ import com.trendora.tienda.usuario.repository.DireccionRepository;
 import com.trendora.tienda.usuario.repository.UsuarioRepository;
 import com.trendora.tienda.usuario.service.intefaces.IDireccionService;
 
+@Service
 public class DireccionService implements IDireccionService{
 
     @Autowired

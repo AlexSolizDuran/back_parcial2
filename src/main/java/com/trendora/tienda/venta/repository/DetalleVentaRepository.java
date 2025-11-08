@@ -11,6 +11,6 @@ import com.trendora.tienda.inventario.model.ProdVariante;;
 
 @Repository
 public interface DetalleVentaRepository extends JpaRepository<DetalleVenta, Long>{
-    List<DetalleVenta> findByVentas(Venta venta);
-    List<DetalleVenta> finfByProdVariante(ProdVariante prodVarianmte);
+    List<DetalleVenta> findByVenta(Venta venta);
+    List<DetalleVenta> findByProdVariante(ProdVariante prodVarianmte);
 }

@@ -52,7 +52,7 @@ public class DetalleVentaService implements IDetalleVentaService{
     @Override
     public List<DetalleVentaResponseDTO> obtenerByPrudVariante(ProdVariante prodVariante) {
         // TODO Auto-generated method stub
-        return detalleVentaRepository.finfByProdVariante(prodVariante).stream().map(this::convertToResponseDTO).toList();
+        return detalleVentaRepository.findByProdVariante(prodVariante).stream().map(this::convertToResponseDTO).toList();
     }
 
     @Override

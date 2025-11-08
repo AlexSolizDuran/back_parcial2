@@ -21,6 +21,7 @@ public class ProdVariante {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -51,4 +52,8 @@ public class ProdVariante {
 
     @Column(nullable = false)
     private Integer stock;
+
+    public ProdVariante(Long id){
+        this.id = id;
+    }
 }

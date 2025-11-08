@@ -93,4 +93,10 @@ public class Usuario implements UserDetails {
     public boolean isEnabled() {
         return true; // La cuenta está habilitada
     }
+
+    //esto es para el filtrar la venta por usuario
+    //se usa en ventacontroller linea 75
+    public Usuario(Long id) {
+        this.id = id;
+    }
 }

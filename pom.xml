@@ -69,6 +69,13 @@
 			<artifactId>sqlite-jdbc</artifactId>
 		</dependency>
 
+		<!-- postgres-->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>42.6.0</version>
+		</dependency>
+
 		<dependency>
 			<groupId>org.hibernate.orm</groupId>
 			<artifactId>hibernate-community-dialects</artifactId>

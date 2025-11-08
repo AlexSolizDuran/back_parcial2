@@ -28,10 +28,10 @@ public class Direccion {
     private String calle;
 
     @Column(name = "numero_casa", nullable = true) //
-    private String numero_casa;
+    private String numeroCasa;
 
     @Column(name = "referencial", nullable = true, length = 255) //
-    private String referencial;
+    private String referencia;
 
     //relacion 1:1 con usuario
     @OneToOne(fetch = FetchType.LAZY, optional = false)
@@ -41,11 +41,11 @@ public class Direccion {
 
     @PrePersist
     private void PrePersist(){
-        if(this.numero_casa == null){
-            this.numero_casa = "N/A";
+        if(this.numeroCasa == null){
+            this.numeroCasa = "N/A";
         }
-        if(this.referencial == null){
-            this.referencial = "N/A";
+        if(this.referencia == null){
+            this.referencia = "N/A";
         }
     }
 }

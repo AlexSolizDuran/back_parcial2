@@ -79,6 +79,13 @@ public class DetalleVentaService implements IDetalleVentaService{
             () -> new RuntimeException("no existe prodVariante con ese id metodo UpdateEntitty DetalleVentaService")
         );
 
+        if (prodVariante.getStock() < dto.cantidad()) {
+            throw new RuntimeException("Stock insuficiente para el producto: " + prodVariante.getId());
+        }
+
+        prodVariante.setStock(prodVariante.getStock() - dto.cantidad());
+        prodVarianteRepository.save(prodVariante);
+        
         detalleVenta.setCantidad(dto.cantidad());
         detalleVenta.setPrecio_unit(dto.precio_unit());
         detalleVenta.setDescuento(dto.descuento());

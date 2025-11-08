@@ -8,6 +8,7 @@ import com.trendora.tienda.usuario.model.Usuario;
 import com.trendora.tienda.usuario.repository.UsuarioRepository;
 import com.trendora.tienda.venta.dto.VentaRequestDTO;
 import com.trendora.tienda.venta.dto.VentaResponseDTO;
+import com.trendora.tienda.venta.dto.detalleventa.DetalleVentaRequestDTO;
 import com.trendora.tienda.venta.model.Venta;
 import com.trendora.tienda.venta.repository.VentaRepository;
 import com.trendora.tienda.venta.service.interfaces.IVentaService;
@@ -123,6 +124,7 @@ public class VentaService implements IVentaService {
     public VentaResponseDTO create(VentaRequestDTO dto){
         Venta venta = convertToEntity(dto);
         venta=ventaRepository.save(venta);
+        
         return convertToResponseDTO(venta);
     }
 

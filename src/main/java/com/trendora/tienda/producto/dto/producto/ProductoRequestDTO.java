@@ -4,10 +4,10 @@ import java.util.Set;
 
 public record ProductoRequestDTO(
         String descripcion,
-        Long modeloId,
-        Long categoriaId,
-        Long materialId,
-        Set<Long> etiquetaIds
+        Long modelo,
+        Long categoria,
+        Long material,
+        Set<Long> etiquetas
 ) {
 
 }

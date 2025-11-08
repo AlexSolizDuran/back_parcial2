@@ -1,6 +1,7 @@
 package com.trendora.tienda.auth;
 
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -51,9 +52,16 @@ public class AuthService {
 
         // 2. Cargamos UserDetails (Esto queda igual)
         final UserDetails userDetails = userDetailsService.loadUserByUsername(request.username());
-
+        Usuario usuarioCompleto = (Usuario) userDetails;
+        String rolNombre = usuarioCompleto.getAuthorities()
+                .stream()
+                .map(authority -> authority.getAuthority())
+                .findFirst() // Tomamos solo el primer rol
+                .orElse(null); // O un valor por defecto si lo prefieres
         // 3. Generamos token (Esto queda igual)
-        final String jwt = jwtService.generateToken(userDetails);
+        Map<String, Object> extraClaims = new HashMap<>();
+        extraClaims.put("role", rolNombre);
+        final String jwt = jwtService.generateToken(extraClaims,userDetails);
 
         // 4. --- ¡AQUÍ ESTÁ EL CAMBIO! ---
         // Creamos la cookie HttpOnly
@@ -64,21 +72,24 @@ public class AuthService {
                 .maxAge(24 * 60 * 60) // Tiempo de vida (ej. 86400s = 24h)
                 .sameSite("Lax") // 🛡️ ¡Crítico! Protección CSRF
                 .build();
-
         // 5. Preparamos el cuerpo de la respuesta con los datos del usuario
         // (Asumimos que tu UserDetails es tu entidad 'Usuario')
-        Usuario usuario = (Usuario) userDetails;
-        var roles = userDetails.getAuthorities()
-                .stream()
-                .map(authority -> authority.getAuthority())
-                .collect(Collectors.toList()); // o .toList() en Java 16+
+
+        // 5. Creamos el DTO con TODOS los campos de tu entidad
+        UsuarioResponseDTO userDto = new UsuarioResponseDTO();
+        userDto.setId(usuarioCompleto.getId());
+        userDto.setNombre(usuarioCompleto.getNombre());
+        userDto.setApellido(usuarioCompleto.getApellido());
+        userDto.setEmail(usuarioCompleto.getEmail());
+        userDto.setUsername(usuarioCompleto.getUsername());
+        userDto.setTelefono(usuarioCompleto.getTelefono());
+        userDto.setRolNombre(rolNombre);
 
         AuthResponse responseBody = new AuthResponse(
                 jwt,
-                usuario.getId(), // Asumiendo que tienes .getId()
-                usuario.getUsername(),
-                roles
+                userDto
         );
+        System.out.println(responseBody);
 
         // 6. Devolvemos el ResponseEntity
         return ResponseEntity.ok()

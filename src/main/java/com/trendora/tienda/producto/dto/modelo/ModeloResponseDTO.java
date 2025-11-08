@@ -3,7 +3,7 @@ package com.trendora.tienda.producto.dto.modelo;
 public record ModeloResponseDTO(
     Long id,
     String nombre,
-    String marcaNombre
+    Long marcaId
 ) {
     
 }

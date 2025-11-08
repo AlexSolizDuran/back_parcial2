@@ -1,17 +1,22 @@
 package com.trendora.tienda.producto.service;
 
-import com.trendora.tienda.producto.dto.categoria.CategoriaRequestDTO;
-import com.trendora.tienda.producto.dto.categoria.CategoriaResponseDTO;
-import com.trendora.tienda.producto.model.Categoria;
-import com.trendora.tienda.producto.repository.CategoriaRepository;
-import com.trendora.tienda.producto.service.interfaces.ICategoriaService;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import com.trendora.tienda.producto.dto.categoria.CategoriaRequestDTO;
+import com.trendora.tienda.producto.dto.categoria.CategoriaResponseDTO;
+import com.trendora.tienda.producto.dto.categoria.CategoriaTreeDTO;
+import com.trendora.tienda.producto.model.Categoria;
+import com.trendora.tienda.producto.repository.CategoriaRepository;
+import com.trendora.tienda.producto.service.interfaces.ICategoriaService;
 
 @Service
 public class CategoriaService implements ICategoriaService {
@@ -25,6 +30,49 @@ public class CategoriaService implements ICategoriaService {
         return categoriaRepository.findAll().stream()
                 .map(this::convertToResponseDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CategoriaTreeDTO> getCategoriaTree() {
+
+        // 1. Cargar TODAS las categorías de la DB (evita Lazy Loading)
+        List<Categoria> todasLasCategorias = categoriaRepository.findAll();
+
+        // 2. Un mapa para acceso rápido a cada DTO por su ID
+        Map<Long, CategoriaTreeDTO> map = new HashMap<>();
+
+        // 3. Crear DTOs iniciales y ponerlos en el mapa
+        // (En este punto, 'hijos' está vacío para todos)
+        for (Categoria cat : todasLasCategorias) {
+            map.put(cat.getId(), new CategoriaTreeDTO(cat.getId(), cat.getNombre()));
+        }
+
+        // 4. Lista para guardar solo las categorías raíz (padre=null)
+        List<CategoriaTreeDTO> rootCategorias = new ArrayList<>();
+
+        // 5. Segunda pasada: Conectar los nodos (padres con hijos)
+        for (Categoria cat : todasLasCategorias) {
+            CategoriaTreeDTO dtoActual = map.get(cat.getId());
+
+            if (cat.getPadre() == null) {
+                // Es una categoría raíz
+                rootCategorias.add(dtoActual);
+            } else {
+                // Es una categoría hija. Buscar su padre en el mapa.
+                Long padreId = cat.getPadre().getId();
+                CategoriaTreeDTO dtoPadre = map.get(padreId);
+
+                if (dtoPadre != null) {
+                    // Añadir 'dtoActual' como hijo de 'dtoPadre'
+                    dtoPadre.addHijo(dtoActual);
+                }
+            }
+        }
+
+        // 6. Devolver solo la lista de raíces
+        // (Las sub-categorías ya están anidadas dentro)
+        return rootCategorias;
     }
 
     @Override

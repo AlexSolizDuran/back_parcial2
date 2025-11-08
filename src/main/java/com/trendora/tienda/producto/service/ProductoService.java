@@ -9,10 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.trendora.tienda.producto.dto.categoria.CategoriaResponseDTO;
-import com.trendora.tienda.producto.dto.etiqueta.EtiquetaResponseDTO;
-import com.trendora.tienda.producto.dto.material.MaterialReponseDTO;
-import com.trendora.tienda.producto.dto.modelo.ModeloResponseDTO;
 import com.trendora.tienda.producto.dto.producto.ProductoRequestDTO;
 import com.trendora.tienda.producto.dto.producto.ProductoResponseDTO;
 import com.trendora.tienda.producto.model.Categoria;
@@ -27,16 +23,13 @@ import com.trendora.tienda.producto.repository.ModeloRepository;
 import com.trendora.tienda.producto.repository.ProductoRepository;
 import com.trendora.tienda.producto.service.interfaces.IProductoService;
 
-import com.trendora.tienda.producto.service.interfaces.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-// ... (imports existentes)
-
 @Service
 public class ProductoService implements IProductoService {
 
     @Autowired
     private ProductoRepository productoRepository;
+
+    // --- CAMBIO: Inyectar repositorios para buscar entidades por ID ---
     @Autowired
     private ModeloRepository modeloRepository;
     @Autowired
@@ -46,16 +39,7 @@ public class ProductoService implements IProductoService {
     @Autowired
     private EtiquetaRepository etiquetaRepository;
 
-    // Inyección de los servicios para reutilizar su lógica
-    @Autowired
-    private IModeloService modeloService;
-    @Autowired
-    private ICategoriaService categoriaService;
-    @Autowired
-    private IMaterialService materialService;
-    @Autowired
-    private IEtiquetaService etiquetaService;
-
+    
     @Override
     @Transactional(readOnly = true)
     public List<ProductoResponseDTO> listAll() {
@@ -88,82 +72,132 @@ public class ProductoService implements IProductoService {
     @Override
     @Transactional
     public void delete(Long id) {
+        // (Añadir lógica de verificación si es necesario, ej. si el producto existe)
+        if (!productoRepository.existsById(id)) {
+            throw new RuntimeException("Producto no encontrado con id: " + id);
+        }
         productoRepository.deleteById(id);
     }
 
+    // ... (findByMarcaId, findByModeloId, etc. no cambian) ...
     @Override
     @Transactional(readOnly = true)
     public List<ProductoResponseDTO> findByMarcaId(Long id) {
         return productoRepository.findByModelo_Marca_Id(id).stream().map(this::convertToResponseDTO).collect(Collectors.toList());
     }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<ProductoResponseDTO> findByModeloId(Long id) {
-        return productoRepository.findByModeloId(id).stream().map(this::convertToResponseDTO).collect(Collectors.toList());
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<ProductoResponseDTO> findByMaterialId(Long id) {
-        return productoRepository.findByMaterialId(id).stream().map(this::convertToResponseDTO).collect(Collectors.toList());
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<ProductoResponseDTO> findByCategoriaId(Long id) {
-        return productoRepository.findByCategoriaId(id).stream().map(this::convertToResponseDTO).collect(Collectors.toList());
-    }
+    // ... (etc.)
 
     @Override
     @Transactional(readOnly = true)
     public List<ProductoResponseDTO> findByEtiquetaId(Long id) {
-        return productoRepository.findByEtiquetasId(id).stream().map(this::convertToResponseDTO).collect(Collectors.toList());
+        return productoRepository.findByEtiquetasId(id)
+                .stream()
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toList());
     }
 
+    // --- CAMBIO PRINCIPAL AQUÍ ---
     @Override
-    public ProductoResponseDTO convertToResponseDTO(Producto producto) {
-        // Delegar la conversión a los servicios correspondientes
-        ModeloResponseDTO modeloDTO = modeloService.convertToResponseDTO(producto.getModelo());
-        CategoriaResponseDTO categoriaDTO = categoriaService.convertToResponseDTO(producto.getCategoria());
-        MaterialReponseDTO materialDTO = materialService.convertToResponseDTO(producto.getMaterial());
-        Set<EtiquetaResponseDTO> etiquetasDTO = producto.getEtiquetas().stream()
-                .map(etiquetaService::convertToResponseDTO)
-                .collect(Collectors.toSet());
+public ProductoResponseDTO convertToResponseDTO(Producto producto) {
 
-        // Construcción dinámica del nombre
-        String nombreCalculado = String.format("%s %s %s",
-                modeloDTO.marcaNombre(),
-                modeloDTO.nombre(),
-                categoriaDTO.nombre());
+    
+    Long modeloId = (producto.getModelo() != null) ? producto.getModelo().getId() : null;
+    Long categoriaId = (producto.getCategoria() != null) ? producto.getCategoria().getId() : null;
+    Long materialId = (producto.getMaterial() != null) ? producto.getMaterial().getId() : null;
 
-        return new ProductoResponseDTO(
-                producto.getId(),
-                nombreCalculado, // Usar el nombre calculado
-                producto.getDescripcion(),
-                modeloDTO,
-                categoriaDTO,
-                materialDTO,
-                etiquetasDTO
-        );
-    }
+    Set<Long> etiquetasIds = producto.getEtiquetas().stream()
+            .map(Etiqueta::getId) // Llama a getId() en cada objeto Etiqueta
+            .collect(Collectors.toSet());
 
+   
+    String modeloNombre = (producto.getModelo() != null) ? producto.getModelo().getNombre() : null;
+    String categoriaNombre = (producto.getCategoria() != null) ? producto.getCategoria().getNombre() : null;
+    String marcaNombre = (producto.getModelo() != null && producto.getModelo().getMarca() != null)
+            ? producto.getModelo().getMarca().getNombre()
+            : "";
+
+    String nombreCalculado = String.format("%s %s %s",
+            marcaNombre,
+            modeloNombre,
+            categoriaNombre).trim().replaceAll(" +", " "); // Limpia espacios extra
+
+    
+ 
+    return new ProductoResponseDTO(
+            producto.getId(),
+            nombreCalculado,
+            producto.getDescripcion(),  // <-- Ver la nota 3
+            modeloId,         // Long
+            categoriaId,      // Long
+            materialId,       // Long
+            etiquetasIds      // Set<Long>
+    );
+}
+
+    // --- CAMBIO: Este método ahora asume que el DTO trae los IDs ---
     private Producto convertToEntity(ProductoRequestDTO dto) {
         Producto producto = new Producto();
+        // Llama al método 'update' que ahora sí funciona
         updateEntityFromDTO(producto, dto);
         return producto;
     }
 
+    // --- CAMBIO PRINCIPAL AQUÍ ---
     private void updateEntityFromDTO(Producto producto, ProductoRequestDTO dto) {
-        Modelo modelo = modeloRepository.findById(dto.modeloId()).orElseThrow(() -> new RuntimeException("Modelo not found"));
-        Categoria categoria = categoriaRepository.findById(dto.categoriaId()).orElseThrow(() -> new RuntimeException("Categoria not found"));
-        Material material = materialRepository.findById(dto.materialId()).orElseThrow(() -> new RuntimeException("Material not found"));
-        Set<Etiqueta> etiquetas = etiquetaRepository.findAllById(dto.etiquetaIds()).stream().collect(Collectors.toSet());
 
+        // Asumimos que tu ProductoRequestDTO tiene métodos como:
+        // dto.modeloId(), dto.categoriaId(), dto.materialId(), dto.etiquetaIds()
+        // Busca las entidades completas usando los repositorios
+        System.out.println(dto);
+        Modelo modelo = modeloRepository.findById(dto.modelo())
+                .orElseThrow(() -> new RuntimeException("Modelo no encontrado con id: " + dto.modelo()));
+
+        Categoria categoria = categoriaRepository.findById(dto.categoria())
+                .orElseThrow(() -> new RuntimeException("Categoría no encontrada con id: " + dto.categoria()));
+
+        Material material = materialRepository.findById(dto.material())
+                .orElseThrow(() -> new RuntimeException("Material no encontrado con id: " + dto.material()));
+
+        Set<Etiqueta> etiquetas = etiquetaRepository.findAllById(dto.etiquetas())
+                .stream().collect(Collectors.toSet());
+
+        // Opcional: Validar que se encontraron todas las etiquetas
+        if (etiquetas.size() != dto.etiquetas().size()) {
+            throw new RuntimeException("Una o más etiquetas no se encontraron");
+        }
+
+        // Ahora sí, actualiza la entidad Producto
         producto.setDescripcion(dto.descripcion());
         producto.setModelo(modelo);
         producto.setCategoria(categoria);
         producto.setMaterial(material);
         producto.setEtiquetas(etiquetas);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductoResponseDTO> findByModeloId(Long id) {
+        return productoRepository.findByModeloId(id)
+                .stream()
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductoResponseDTO> findByMaterialId(Long id) {
+        return productoRepository.findByMaterialId(id)
+                .stream()
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductoResponseDTO> findByCategoriaId(Long id) {
+        return productoRepository.findByCategoriaId(id)
+                .stream()
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toList());
     }
 }

@@ -1,5 +1,13 @@
 package com.trendora.tienda.producto.service;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.trendora.tienda.producto.dto.modelo.ModeloRequestDTO;
 import com.trendora.tienda.producto.dto.modelo.ModeloResponseDTO;
 import com.trendora.tienda.producto.model.Marca;
@@ -7,13 +15,6 @@ import com.trendora.tienda.producto.model.Modelo;
 import com.trendora.tienda.producto.repository.MarcaRepository;
 import com.trendora.tienda.producto.repository.ModeloRepository;
 import com.trendora.tienda.producto.service.interfaces.IModeloService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ModeloService implements IModeloService {
@@ -80,6 +81,6 @@ public class ModeloService implements IModeloService {
 
     @Override
     public ModeloResponseDTO convertToResponseDTO(Modelo modelo) {
-        return new ModeloResponseDTO(modelo.getId(), modelo.getNombre(), modelo.getMarca().getNombre());
+        return new ModeloResponseDTO(modelo.getId(), modelo.getNombre(), modelo.getMarca().getId());
     }
 }

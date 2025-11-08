@@ -1,12 +1,11 @@
 package com.trendora.tienda.producto.repository;
 
-import java.util.List;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.trendora.tienda.producto.model.Producto;
-
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
@@ -20,5 +19,7 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
     List<Producto> findByEtiquetasId(Long id);
 
     List<Producto> findByMaterialId(Long id);
+
+    Optional<Producto> findByDescripcion(String descripcion);
 
 }

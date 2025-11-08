@@ -7,7 +7,6 @@ public record ProdVarianteRequestDTO(
         Long colorId,
         Long tallaId,
         BigDecimal costo,
-        String imagen,
         BigDecimal ppp,
         BigDecimal precio,
         String sku,

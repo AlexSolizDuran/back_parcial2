@@ -39,7 +39,6 @@ public class ProductoService implements IProductoService {
     @Autowired
     private EtiquetaRepository etiquetaRepository;
 
-    
     @Override
     @Transactional(readOnly = true)
     public List<ProductoResponseDTO> listAll() {
@@ -98,41 +97,38 @@ public class ProductoService implements IProductoService {
 
     // --- CAMBIO PRINCIPAL AQUÍ ---
     @Override
-public ProductoResponseDTO convertToResponseDTO(Producto producto) {
+    public ProductoResponseDTO convertToResponseDTO(Producto producto) {
 
-    
-    Long modeloId = (producto.getModelo() != null) ? producto.getModelo().getId() : null;
-    Long categoriaId = (producto.getCategoria() != null) ? producto.getCategoria().getId() : null;
-    Long materialId = (producto.getMaterial() != null) ? producto.getMaterial().getId() : null;
+        Long modeloId = (producto.getModelo() != null) ? producto.getModelo().getId() : null;
+        Long categoriaId = (producto.getCategoria() != null) ? producto.getCategoria().getId() : null;
+        Long materialId = (producto.getMaterial() != null) ? producto.getMaterial().getId() : null;
 
-    Set<Long> etiquetasIds = producto.getEtiquetas().stream()
-            .map(Etiqueta::getId) // Llama a getId() en cada objeto Etiqueta
-            .collect(Collectors.toSet());
+        Set<Long> etiquetasIds = producto.getEtiquetas().stream()
+                .map(Etiqueta::getId) // Llama a getId() en cada objeto Etiqueta
+                .collect(Collectors.toSet());
 
-   
-    String modeloNombre = (producto.getModelo() != null) ? producto.getModelo().getNombre() : null;
-    String categoriaNombre = (producto.getCategoria() != null) ? producto.getCategoria().getNombre() : null;
-    String marcaNombre = (producto.getModelo() != null && producto.getModelo().getMarca() != null)
-            ? producto.getModelo().getMarca().getNombre()
-            : "";
+        String modeloNombre = (producto.getModelo() != null) ? producto.getModelo().getNombre() : null;
+        String categoriaNombre = (producto.getCategoria() != null) ? producto.getCategoria().getNombre() : null;
+        String marcaNombre = (producto.getModelo() != null && producto.getModelo().getMarca() != null)
+                ? producto.getModelo().getMarca().getNombre()
+                : "";
 
-    String nombreCalculado = String.format("%s %s %s",
-            marcaNombre,
-            modeloNombre,
-            categoriaNombre).trim().replaceAll(" +", " "); // Limpia espacios extra
+        String nombreCalculado = String.format("%s %s %s",
+                marcaNombre,
+                modeloNombre,
+                categoriaNombre).trim().replaceAll(" +", " "); // Limpia espacios extra
 
-    
- 
-    return new ProductoResponseDTO(
-            producto.getId(),
-            nombreCalculado,
-            producto.getDescripcion(),  // <-- Ver la nota 3
-            modeloId,         // Long
-            categoriaId,      // Long
-            materialId,       // Long
-            etiquetasIds      // Set<Long>
-    );
-}
+        return new ProductoResponseDTO(
+                producto.getId(),
+                nombreCalculado,
+                producto.getDescripcion(),
+                producto.getImagen(), // <-- Ver la nota 3
+                modeloId, // Long
+                categoriaId, // Long
+                materialId, // Long
+                etiquetasIds // Set<Long>
+        );
+    }
 
     // --- CAMBIO: Este método ahora asume que el DTO trae los IDs ---
     private Producto convertToEntity(ProductoRequestDTO dto) {

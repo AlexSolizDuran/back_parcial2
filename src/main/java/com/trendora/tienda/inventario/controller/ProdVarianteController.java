@@ -1,14 +1,23 @@
 package com.trendora.tienda.inventario.controller;
 
-import com.trendora.tienda.inventario.dto.prodVariante.ProdVarianteRequestDTO;
-import com.trendora.tienda.inventario.dto.prodVariante.ProdVarianteResponseDTO;
-import com.trendora.tienda.inventario.service.interfaces.IProdVarianteService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
+import com.trendora.tienda.inventario.dto.prodVariante.ProdVarianteListDTO;
+import com.trendora.tienda.inventario.dto.prodVariante.ProdVarianteRequestDTO;
+import com.trendora.tienda.inventario.dto.prodVariante.ProdVarianteResponseDTO;
+import com.trendora.tienda.inventario.service.interfaces.IProdVarianteService;
 
 @RestController
 @RequestMapping("/inventario/prod-variante")
@@ -18,7 +27,7 @@ public class ProdVarianteController {
     private IProdVarianteService prodVarianteService;
 
     @GetMapping
-    public ResponseEntity<List<ProdVarianteResponseDTO>> getAll() {
+    public ResponseEntity<List<ProdVarianteListDTO>> getAll() {
         return ResponseEntity.ok(prodVarianteService.listAll());
     }
 

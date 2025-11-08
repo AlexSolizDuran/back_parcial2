@@ -12,7 +12,6 @@ public record ProdVarianteResponseDTO(
         ColorResponseDTO color,
         TallaResponseDTO talla,
         BigDecimal costo,
-        String imagen,
         BigDecimal ppp,
         BigDecimal precio,
         String sku,

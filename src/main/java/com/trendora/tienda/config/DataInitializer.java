@@ -17,6 +17,7 @@ public class DataInitializer implements CommandLineRunner {
     private final TallaSeedingService tallaSeedingService;
     private final ColorSeedingService colorSeedingService;
     private final ProductoSeedingService productoSeedingService;
+    private final ProdVarianteSeedingService prodVarianteSeedingService;
 
     public DataInitializer(RolSeedingService roleSeedingService,
                            UsuarioSeedingService userSeedingService,
@@ -27,7 +28,8 @@ public class DataInitializer implements CommandLineRunner {
                            ModeloSeedingService modeloSeedingService,
                            TallaSeedingService tallaSeedingService,
                            ColorSeedingService colorSeedingService,
-                           ProductoSeedingService productoSeedingService) {
+                           ProductoSeedingService productoSeedingService,
+                           ProdVarianteSeedingService prodVarianteSeedingService) {
         this.roleSeedingService = roleSeedingService;
         this.userSeedingService = userSeedingService;
         this.categoriaSeedingService = categoriaSeedingService;
@@ -38,6 +40,7 @@ public class DataInitializer implements CommandLineRunner {
         this.tallaSeedingService = tallaSeedingService;
         this.colorSeedingService = colorSeedingService;
         this.productoSeedingService = productoSeedingService;
+        this.prodVarianteSeedingService = prodVarianteSeedingService;
     }
 
     @Override
@@ -54,6 +57,7 @@ public class DataInitializer implements CommandLineRunner {
         tallaSeedingService.seedTallas();
         colorSeedingService.seedColores();
         productoSeedingService.seedProductos();
+        prodVarianteSeedingService.seedProdVariantes();
 
         System.out.println("--- FIN DE CARGA DE DATOS INICIALES ---");
     }

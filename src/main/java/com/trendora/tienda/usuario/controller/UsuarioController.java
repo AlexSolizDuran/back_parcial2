@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.trendora.tienda.usuario.dto.usuario.UsuarioListDTO;
@@ -41,10 +42,18 @@ public class UsuarioController {
                              .body(responseDTO);
     }
 
-    // --- READ (Todos) ---
-    @GetMapping
-    public ResponseEntity<List<UsuarioListDTO>> obtenerTodosLosUsuarios() {
-        List<UsuarioListDTO> usuarios = usuarioService.obtenerTodosLosUsuarios();
+  @GetMapping
+    public ResponseEntity<List<UsuarioListDTO>> obtenerUsuarios(
+            @RequestParam(name = "rol", required = false) String rolNombre
+    ) {
+        List<UsuarioListDTO> usuarios;
+
+        if (rolNombre != null && !rolNombre.isEmpty()) {
+            usuarios = usuarioService.obtenerUsuariosPorRol(rolNombre);
+        } else {
+            usuarios = usuarioService.obtenerTodosLosUsuarios();
+        }
+
         return ResponseEntity.ok(usuarios);
     }
 
@@ -71,4 +80,5 @@ public class UsuarioController {
         usuarioService.eliminarUsuario(id);
         return ResponseEntity.noContent().build();
     }
+
 }

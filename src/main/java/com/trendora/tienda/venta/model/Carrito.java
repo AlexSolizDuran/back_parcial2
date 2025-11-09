@@ -1,5 +1,6 @@
 package com.trendora.tienda.venta.model;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -34,6 +35,9 @@ public class Carrito {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private Usuario cliente;
 
+    @OneToMany(mappedBy = "carrito", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ItemCarrito> items;
+
     @PrePersist
     private void PrePersist(){
         this.fecha = LocalDateTime.now();
@@ -44,3 +48,4 @@ public class Carrito {
         this.id = id;
     }
 }
+

@@ -1,40 +1,39 @@
 package com.trendora.tienda.venta.model;
-import com.trendora.tienda.inventario.model.ProdVariante;
 
-//librerias core
+import com.trendora.tienda.inventario.model.ProdVariante;
 import jakarta.persistence.*;
-import lombok.*;
-//librerias core
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 @Entity
 @Table(name = "detalle_venta")
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class DetalleVenta {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "cantidad", nullable = false)
-    private Integer cantidad;//
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "venta_id", nullable = false)
+    private Venta venta;
 
-    @Column(name = "precio_unit", nullable = false)
-    private Double precio_unit;//
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "prod_variante_id", nullable = false)
+    private ProdVariante prodVariante;
 
-    @Column(name = "descuento", nullable = false)
-    private Double descuento;//
-    
-    @Column(name = "subtotal", nullable = false)
-    private Double subtotal;//
+    @Column(nullable = false)
+    private Integer cantidad;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "venta_id", nullable = false, referencedColumnName = "id" ,foreignKey = @ForeignKey(name = "fk_venta"))
-    private Venta venta;//
+    @Column(name = "precio_unitario", nullable = false)
+    private Double precioUnitario;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "prod_variante_id", nullable = false, referencedColumnName = "id" ,foreignKey = @ForeignKey(name = "fk_prod_variante"))
-    private ProdVariante prodVariante;//
+    @Column(nullable = false)
+    private Double subtotal;
 
+    @Column
+    private Double descuento;
 }

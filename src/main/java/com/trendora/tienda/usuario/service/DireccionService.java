@@ -81,6 +81,7 @@ public class DireccionService implements IDireccionService{
     public DireccionResponseDTO convertToResponseDTO(Direccion direccion) {
         // TODO Auto-generated method stub
         return new DireccionResponseDTO(
+            direccion.getId(),
             direccion.getDepartamento(),
             direccion.getZona(),
             direccion.getCalle(),

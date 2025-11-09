@@ -4,6 +4,7 @@ import com.trendora.tienda.producto.model.Producto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,4 +23,5 @@ public interface ProductoRepository extends JpaRepository<Producto, Long> {
 
     Optional<Producto> findByDescripcion(String descripcion);
 
+    List<Producto> findByCategoriaIdIn(Collection<Long> ids);
 }

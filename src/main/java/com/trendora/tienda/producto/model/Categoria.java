@@ -1,5 +1,7 @@
 package com.trendora.tienda.producto.model;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -8,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,5 +39,6 @@ public class Categoria {
     @JoinColumn(name="padre_id")
     private Categoria padre;
 
-
+    @OneToMany(mappedBy = "padre", fetch = FetchType.LAZY)
+    private List<Categoria> hijos;
 }

@@ -6,6 +6,7 @@ public record ProductoResponseDTO(
         Long id,
         String nombre,
         String descripcion,
+        String imagen,
         Long modelo,
         Long categoria,
         Long material,

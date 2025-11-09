@@ -1,5 +1,14 @@
 package com.trendora.tienda.inventario.service;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.trendora.tienda.inventario.dto.prodVariante.ProdVarianteListDTO;
 import com.trendora.tienda.inventario.dto.prodVariante.ProdVarianteRequestDTO;
 import com.trendora.tienda.inventario.dto.prodVariante.ProdVarianteResponseDTO;
 import com.trendora.tienda.inventario.model.Color;
@@ -14,13 +23,6 @@ import com.trendora.tienda.inventario.service.interfaces.ITallaService;
 import com.trendora.tienda.producto.model.Producto;
 import com.trendora.tienda.producto.repository.ProductoRepository;
 import com.trendora.tienda.producto.service.interfaces.IProductoService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class ProdVarianteService implements IProdVarianteService {
@@ -43,8 +45,8 @@ public class ProdVarianteService implements IProdVarianteService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProdVarianteResponseDTO> listAll() {
-        return prodVarianteRepository.findAll().stream().map(this::convertToResponseDTO).collect(Collectors.toList());
+    public List<ProdVarianteListDTO> listAll() {
+        return prodVarianteRepository.findAll().stream().map(this::convertToProdVarianteListDTO).collect(Collectors.toList());
     }
 
     @Override
@@ -91,7 +93,6 @@ public class ProdVarianteService implements IProdVarianteService {
         prodVariante.setColor(color);
         prodVariante.setTalla(talla);
         prodVariante.setCosto(dto.costo());
-        prodVariante.setImagen(dto.imagen());
         prodVariante.setPpp(dto.ppp());
         prodVariante.setPrecio(dto.precio());
         prodVariante.setSku(dto.sku());
@@ -106,7 +107,21 @@ public class ProdVarianteService implements IProdVarianteService {
                 colorService.convertToResponseDTO(pv.getColor()),
                 tallaService.convertToResponseDTO(pv.getTalla()),
                 pv.getCosto(),
-                pv.getImagen(),
+                pv.getPpp(),
+                pv.getPrecio(),
+                pv.getSku(),
+                pv.getStock()
+        );
+    }
+
+    @Override
+    public ProdVarianteListDTO convertToProdVarianteListDTO(ProdVariante pv) {
+        return new ProdVarianteListDTO(
+                pv.getId(),
+                pv.getProducto().getId(),
+                pv.getColor().getId(),
+                pv.getTalla().getId(),
+                pv.getCosto(),
                 pv.getPpp(),
                 pv.getPrecio(),
                 pv.getSku(),

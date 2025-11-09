@@ -11,7 +11,7 @@ import jakarta.persistence.*;
 import lombok.*;
 //librerias core
 @Entity
-@Table(name = "carrito")
+@Table(name = "item_carrito")
 @Data
 @Builder
 @NoArgsConstructor
@@ -41,6 +41,5 @@ public class ItemCarrito {
     @PrePersist
     private void prePersist() {
         this.fecha = LocalDateTime.now();
-        this.cantidad = 0;
     }
 }

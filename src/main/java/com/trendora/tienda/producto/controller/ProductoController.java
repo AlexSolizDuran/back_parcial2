@@ -69,7 +69,7 @@ public class ProductoController {
 
     @GetMapping("/categoria/{id}")
     public ResponseEntity<List<ProductoResponseDTO>> getProductosByCategoriaId(@PathVariable Long id) {
-        return ResponseEntity.ok(productoService.findByCategoriaId(id));
+        return ResponseEntity.ok(productoService.findByCategoriaIdRecursive(id));
     }
 
     @GetMapping("/etiqueta/{id}")

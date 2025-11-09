@@ -6,9 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.trendora.tienda.inventario.model.ProdVariante;
-import com.trendora.tienda.inventario.repository.ProdVarianteRepository;
+import com.trendora.tienda.inventario.service.ProdVarianteService;
 import com.trendora.tienda.venta.dto.itemcarrito.ItemCarritoRequestDTO;
 import com.trendora.tienda.venta.dto.itemcarrito.ItemCarritoResponseDTO;
 import com.trendora.tienda.venta.model.Carrito;
@@ -17,10 +15,14 @@ import com.trendora.tienda.venta.repository.CarritoRepository;
 import com.trendora.tienda.venta.repository.ItemCarritoRepository;
 import com.trendora.tienda.venta.service.interfaces.IItemCarritoService;
 
-;
+import com.trendora.tienda.venta.repository.CarritoRepository;
+import com.trendora.tienda.inventario.model.ProdVariante;
+import com.trendora.tienda.inventario.repository.ProdVarianteRepository;
 
 @Service
-public class ItemCarritoService implements IItemCarritoService {
+public class ItemCarritoService implements IItemCarritoService{
+
+    private final ProdVarianteService prodVarianteService;
 
     @Autowired
     private ItemCarritoRepository itemCarritoRepository;
@@ -30,6 +32,10 @@ public class ItemCarritoService implements IItemCarritoService {
 
     @Autowired
     private ProdVarianteRepository prodVarianteRepository;
+
+    ItemCarritoService(ProdVarianteService prodVarianteService) {
+        this.prodVarianteService = prodVarianteService;
+    }
 
     @Override
     public List<ItemCarrito> listarTodo() {
@@ -101,11 +107,11 @@ public class ItemCarritoService implements IItemCarritoService {
     public ItemCarritoResponseDTO convertToResponseDTO(ItemCarrito itemCarrito) {
         // TODO Auto-generated method stub
         return new ItemCarritoResponseDTO(
-                itemCarrito.getId(),
-                itemCarrito.getCarrito().getId(),
-                itemCarrito.getProdVariante().getId(),
-                itemCarrito.getCantidad(),
-                itemCarrito.getFecha()
+            itemCarrito.getId(),
+            itemCarrito.getCarrito().getId(),
+            prodVarianteService.convertToResponseDTO(itemCarrito.getProdVariante()),
+            itemCarrito.getCantidad(),
+            itemCarrito.getFecha()
         );
     }
 

@@ -17,6 +17,7 @@ import com.trendora.tienda.usuario.service.intefaces.IDireccionService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 
@@ -67,5 +68,15 @@ public class DireccionController {
         .stream()
         .map(direccionService::convertToResponseDTO).toList();
         return ResponseEntity.ok(listaDireccion);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<DireccionResponseDTO> actualizarDireccion(
+            @PathVariable Long id, 
+            @RequestBody DireccionRequestDTO direccionRequestDTO
+    ) {
+        return direccionService.update(id, direccionRequestDTO)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }

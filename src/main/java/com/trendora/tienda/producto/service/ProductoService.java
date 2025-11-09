@@ -1,5 +1,6 @@
 package com.trendora.tienda.producto.service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -196,4 +197,37 @@ public class ProductoService implements IProductoService {
                 .map(this::convertToResponseDTO)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductoResponseDTO> findByCategoriaIdRecursive(Long categoriaId) {
+        Categoria categoriaRaiz = categoriaRepository.findById(categoriaId)
+                .orElseThrow(() -> new RuntimeException("Categoría no encontrada: " + categoriaId));
+
+        Set<Long> categoriaIds = new HashSet<>();
+        findAllChildCategoryIds(categoriaRaiz, categoriaIds);
+
+        List<Producto> productos = productoRepository.findByCategoriaIdIn(categoriaIds);
+
+        return productos.stream()
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Función auxiliar recursiva para obtener todos los IDs de las categorías hijas.
+     */
+    private void findAllChildCategoryIds(Categoria categoria, Set<Long> ids) {
+        ids.add(categoria.getId()); // Añadir el ID actual
+
+        // Cargar hijos explícitamente para evitar problemas de LAZY loading
+        List<Categoria> hijos = categoriaRepository.findAllById(
+            categoria.getHijos().stream().map(Categoria::getId).collect(Collectors.toList())
+        );
+
+        for (Categoria hijo : hijos) {
+            findAllChildCategoryIds(hijo, ids); // Llamada recursiva
+        }
+    }
+    // ------------------------------------
 }

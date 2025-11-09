@@ -46,6 +46,7 @@ public interface IProductoService {
 
     List<ProductoResponseDTO> findByEtiquetaId(Long id);
 
+    List<ProductoResponseDTO> findByCategoriaIdRecursive(Long id);
     /**
      * Método de utilidad para convertir una entidad Producto a un ProductoResponseDTO.
      * (Incluido porque la implementación lo tenía como @Override)

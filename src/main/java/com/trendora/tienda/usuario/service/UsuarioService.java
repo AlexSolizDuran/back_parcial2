@@ -90,6 +90,17 @@ public class UsuarioService {
         usuarioRepository.deleteById(id);
     }
 
+    public List<UsuarioListDTO> obtenerUsuariosPorRol(String rolNombre) {
+
+        // 1. Llama al método de repositorio que discutimos en la pregunta anterior
+        List<Usuario> usuarios = usuarioRepository.findByRol_Nombre(rolNombre);
+
+        // 2. Mapea los resultados a DTO (misma lógica que antes)
+        return usuarios.stream()
+                .map(this::convertirAListDTO)
+                .collect(Collectors.toList());
+    }
+
     // ==================================================================
     // MÉTODOS PRIVADOS DE TRADUCCIÓN (MAPPERS)
     // ==================================================================
@@ -110,6 +121,7 @@ public class UsuarioService {
         dto.setId(usuario.getId());
         dto.setUsername(usuario.getUsername());
         dto.setNombre(usuario.getNombre());
+        dto.setApellido(usuario.getApellido());
         dto.setEmail(usuario.getEmail());
         dto.setRolNombre(usuario.getRol().getNombre());
         return dto;

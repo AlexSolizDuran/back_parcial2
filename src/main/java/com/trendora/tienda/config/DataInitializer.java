@@ -18,6 +18,8 @@ public class DataInitializer implements CommandLineRunner {
     private final ColorSeedingService colorSeedingService;
     private final ProductoSeedingService productoSeedingService;
     private final ProdVarianteSeedingService prodVarianteSeedingService;
+    private final VentaSeedingService ventaSeedingService;
+    private final DetalleVentaSeedingService detalleVentaSeedingService;
 
     public DataInitializer(RolSeedingService roleSeedingService,
                            UsuarioSeedingService userSeedingService,
@@ -29,7 +31,9 @@ public class DataInitializer implements CommandLineRunner {
                            TallaSeedingService tallaSeedingService,
                            ColorSeedingService colorSeedingService,
                            ProductoSeedingService productoSeedingService,
-                           ProdVarianteSeedingService prodVarianteSeedingService) {
+                           ProdVarianteSeedingService prodVarianteSeedingService,
+                           VentaSeedingService ventaSeedingService,
+                           DetalleVentaSeedingService detalleVentaSeedingService) {
         this.roleSeedingService = roleSeedingService;
         this.userSeedingService = userSeedingService;
         this.categoriaSeedingService = categoriaSeedingService;
@@ -41,6 +45,8 @@ public class DataInitializer implements CommandLineRunner {
         this.colorSeedingService = colorSeedingService;
         this.productoSeedingService = productoSeedingService;
         this.prodVarianteSeedingService = prodVarianteSeedingService;
+        this.ventaSeedingService = ventaSeedingService;
+        this.detalleVentaSeedingService = detalleVentaSeedingService;
     }
 
     @Override
@@ -58,6 +64,8 @@ public class DataInitializer implements CommandLineRunner {
         colorSeedingService.seedColores();
         productoSeedingService.seedProductos();
         prodVarianteSeedingService.seedProdVariantes();
+        ventaSeedingService.seedVentas();
+        detalleVentaSeedingService.seedDetalleVentas();
 
         System.out.println("--- FIN DE CARGA DE DATOS INICIALES ---");
     }

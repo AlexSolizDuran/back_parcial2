@@ -51,7 +51,7 @@ public class Usuario implements UserDetails {
     @Column(nullable = false, length = 50, unique = true)
     private String username;
 
-    @ManyToOne(fetch = FetchType.EAGER) // EAGER es importante para que el rol se cargue siempre
+    @ManyToOne(fetch = FetchType.EAGER) 
     @JoinColumn(name = "rol_id")
     private Rol rol;
 

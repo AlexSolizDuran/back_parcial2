@@ -5,8 +5,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProdVarianteRepository extends JpaRepository<ProdVariante, Long> {
     List<ProdVariante> findByProductoId(Long productoId);
+    Optional<ProdVariante> findBySku(String sku);
 }

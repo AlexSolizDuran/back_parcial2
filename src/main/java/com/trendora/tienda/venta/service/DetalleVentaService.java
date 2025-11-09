@@ -31,13 +31,11 @@ public class DetalleVentaService implements IDetalleVentaService{
 
     @Override
     public List<DetalleVentaResponseDTO> listarTodo() {
-        // TODO Auto-generated method stub
         return detalleVentaRepository.findAll().stream().map(this::convertToResponseDTO).toList();
     }
 
     @Override
     public DetalleVentaResponseDTO obtenerById(Long id) {
-        // TODO Auto-generated method stub
         return detalleVentaRepository.findById(id).map(this::convertToResponseDTO).orElseThrow(
             () -> new RuntimeException("no hay detalleVenta con ese id")
         );
@@ -45,19 +43,16 @@ public class DetalleVentaService implements IDetalleVentaService{
 
     @Override
     public List<DetalleVentaResponseDTO> obtenerByVenta(Venta venta) {
-        // TODO Auto-generated method stub
         return detalleVentaRepository.findByVenta(venta).stream().map(this::convertToResponseDTO).toList();
     }
 
     @Override
     public List<DetalleVentaResponseDTO> obtenerByPrudVariante(ProdVariante prodVariante) {
-        // TODO Auto-generated method stub
         return detalleVentaRepository.findByProdVariante(prodVariante).stream().map(this::convertToResponseDTO).toList();
     }
 
     @Override
     public void eliminar(Long id) {
-        // TODO Auto-generated method stub
         if(!detalleVentaRepository.existsById(id)){
             throw new RuntimeException("no existe el id a eliminar: " + id);
         }
@@ -86,7 +81,7 @@ public class DetalleVentaService implements IDetalleVentaService{
         prodVarianteRepository.save(prodVariante);
         
         detalleVenta.setCantidad(dto.cantidad());
-        detalleVenta.setPrecio_unit(dto.precio_unit());
+        detalleVenta.setPrecioUnitario(dto.precio_unit());
         detalleVenta.setDescuento(dto.descuento());
         detalleVenta.setSubtotal(dto.subtotal());
         detalleVenta.setVenta(venta);
@@ -96,7 +91,6 @@ public class DetalleVentaService implements IDetalleVentaService{
     @Override
     @Transactional
     public DetalleVentaResponseDTO create(DetalleVentaRequestDTO dto) {
-        // TODO Auto-generated method stub
         DetalleVenta detalleVenta = converToEntity(dto);
         detalleVenta = detalleVentaRepository.save(detalleVenta);
         return convertToResponseDTO(detalleVenta);
@@ -105,7 +99,6 @@ public class DetalleVentaService implements IDetalleVentaService{
     @Override
     @Transactional
     public Optional<DetalleVentaResponseDTO> update(Long id, DetalleVentaRequestDTO dto) {
-        // TODO Auto-generated method stub
         return detalleVentaRepository.findById(id).map(detalleVenta -> {
             updateEntityFromDTO(detalleVenta, dto);
             detalleVenta = detalleVentaRepository.save(detalleVenta);
@@ -117,11 +110,10 @@ public class DetalleVentaService implements IDetalleVentaService{
     @Override
     @Transactional
     public DetalleVentaResponseDTO convertToResponseDTO(DetalleVenta detalleVenta) {
-        // TODO Auto-generated method stub
         return new DetalleVentaResponseDTO(
             detalleVenta.getId(),
             detalleVenta.getCantidad(),
-            detalleVenta.getPrecio_unit(),
+            detalleVenta.getPrecioUnitario(),
             detalleVenta.getDescuento(),
             detalleVenta.getSubtotal(),
             detalleVenta.getVenta().getId(),

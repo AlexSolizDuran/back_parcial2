@@ -72,7 +72,7 @@ public class DetalleVentaService implements IDetalleVentaService{
 
     private void updateEntityFromDTO(DetalleVenta detalleVenta, DetalleVentaRequestDTO dto){
         Venta venta = ventaRepository.findById(dto.ventaId()).orElseThrow(
-            () -> new RuntimeException("no existe venta con ese id metodo UpdateEntitty DetalleVentaService")
+            () -> new RuntimeException("NOO existe venta con ese id metodo UpdateEntitty DetalleVentaService")
         );
 
         ProdVariante prodVariante = prodVarianteRepository.findById(dto.prodVarianteId()).orElseThrow(

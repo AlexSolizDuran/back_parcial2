@@ -1,6 +1,7 @@
 package com.trendora.tienda.venta.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +18,11 @@ import org.springframework.web.bind.annotation.RestController;
 import com.trendora.tienda.venta.dto.itemcarrito.ItemCarritoRequestDTO;
 import com.trendora.tienda.venta.dto.itemcarrito.ItemCarritoResponseDTO;
 import com.trendora.tienda.venta.model.Carrito;
+import com.trendora.tienda.venta.model.ItemCarrito;
 import com.trendora.tienda.venta.service.interfaces.IItemCarritoService;
 
 @RestController
-@RequestMapping("/venta/iteamcarrito")
+@RequestMapping("/venta/itemcarrito")
 public class ItemCarritoController {
     @Autowired
     private final IItemCarritoService itemCarritoService;
@@ -68,9 +70,14 @@ public class ItemCarritoController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @DeleteMapping
-    public ResponseEntity<Void> delete(@RequestParam Long id) {
-        itemCarritoService.eliminar(id);
-        return ResponseEntity.noContent().build();
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        Optional<ItemCarrito> item = itemCarritoService.buscarById(id);
+        if (item.isPresent()) {
+            itemCarritoService.eliminar(id);
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

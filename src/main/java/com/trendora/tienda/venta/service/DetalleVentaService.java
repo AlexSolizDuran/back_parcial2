@@ -63,8 +63,7 @@ public class DetalleVentaService implements IDetalleVentaService{
         DetalleVenta detalleVenta = new DetalleVenta();
         updateEntityFromDTO(detalleVenta, dto);
         return detalleVenta;
-    }
-
+    }//
     private void updateEntityFromDTO(DetalleVenta detalleVenta, DetalleVentaRequestDTO dto){
         Venta venta = ventaRepository.findById(dto.ventaId()).orElseThrow(
             () -> new RuntimeException("no existe venta con ese id metodo UpdateEntitty DetalleVentaService")

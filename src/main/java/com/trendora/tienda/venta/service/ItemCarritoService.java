@@ -22,6 +22,8 @@ import com.trendora.tienda.venta.service.interfaces.IItemCarritoService;
 @Service
 public class ItemCarritoService implements IItemCarritoService {
 
+    private final ProdVarianteService prodVarianteService;
+
     @Autowired
     private ItemCarritoRepository itemCarritoRepository;
 
@@ -30,6 +32,10 @@ public class ItemCarritoService implements IItemCarritoService {
 
     @Autowired
     private ProdVarianteRepository prodVarianteRepository;
+
+    ItemCarritoService(ProdVarianteService prodVarianteService) {
+        this.prodVarianteService = prodVarianteService;
+    }
 
     @Override
     public List<ItemCarrito> listarTodo() {

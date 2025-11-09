@@ -3,9 +3,9 @@ package com.trendora.tienda.inventario.dto.prodVariante;
 import java.math.BigDecimal;
 
 public record ProdVarianteRequestDTO(
-        Long productoId,
-        Long colorId,
-        Long tallaId,
+        Long producto,
+        Long color,
+        Long talla,
         BigDecimal costo,
         BigDecimal ppp,
         BigDecimal precio,

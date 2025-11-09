@@ -85,9 +85,9 @@ public class ProdVarianteService implements IProdVarianteService {
     }
 
     private void updateFromDTO(ProdVariante prodVariante, ProdVarianteRequestDTO dto) {
-        Producto producto = productoRepository.findById(dto.productoId()).orElseThrow(() -> new RuntimeException("Producto not found"));
-        Color color = colorRepository.findById(dto.colorId()).orElseThrow(() -> new RuntimeException("Color not found"));
-        Talla talla = tallaRepository.findById(dto.tallaId()).orElseThrow(() -> new RuntimeException("Talla not found"));
+        Producto producto = productoRepository.findById(dto.producto()).orElseThrow(() -> new RuntimeException("Producto not found"));
+        Color color = colorRepository.findById(dto.color()).orElseThrow(() -> new RuntimeException("Color not found"));
+        Talla talla = tallaRepository.findById(dto.talla()).orElseThrow(() -> new RuntimeException("Talla not found"));
 
         prodVariante.setProducto(producto);
         prodVariante.setColor(color);

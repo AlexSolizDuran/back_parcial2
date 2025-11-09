@@ -2,11 +2,15 @@ package com.trendora.tienda.venta.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.trendora.tienda.inventario.service.ProdVarianteService;
+
+import com.trendora.tienda.inventario.model.ProdVariante;
+import com.trendora.tienda.inventario.repository.ProdVarianteRepository;
+import com.trendora.tienda.inventario.service.interfaces.IProdVarianteService;
 import com.trendora.tienda.venta.dto.itemcarrito.ItemCarritoRequestDTO;
 import com.trendora.tienda.venta.dto.itemcarrito.ItemCarritoResponseDTO;
 import com.trendora.tienda.venta.model.Carrito;
@@ -15,14 +19,8 @@ import com.trendora.tienda.venta.repository.CarritoRepository;
 import com.trendora.tienda.venta.repository.ItemCarritoRepository;
 import com.trendora.tienda.venta.service.interfaces.IItemCarritoService;
 
-import com.trendora.tienda.venta.repository.CarritoRepository;
-import com.trendora.tienda.inventario.model.ProdVariante;
-import com.trendora.tienda.inventario.repository.ProdVarianteRepository;
-
 @Service
-public class ItemCarritoService implements IItemCarritoService{
-
-    private final ProdVarianteService prodVarianteService;
+public class ItemCarritoService implements IItemCarritoService {
 
     @Autowired
     private ItemCarritoRepository itemCarritoRepository;
@@ -33,35 +31,37 @@ public class ItemCarritoService implements IItemCarritoService{
     @Autowired
     private ProdVarianteRepository prodVarianteRepository;
 
-    ItemCarritoService(ProdVarianteService prodVarianteService) {
-        this.prodVarianteService = prodVarianteService;
+    @Autowired
+    private IProdVarianteService prodVarianteService;
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ItemCarritoResponseDTO> listarTodo() {
+        return itemCarritoRepository.findAll().stream()
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<ItemCarrito> listarTodo() {
-        // TODO Auto-generated method stub
-        return itemCarritoRepository.findAll();
+    @Transactional(readOnly = true)
+    public Optional<ItemCarritoResponseDTO> buscarById(Long id) {
+        return itemCarritoRepository.findById(id).map(this::convertToResponseDTO);
     }
 
     @Override
-    public Optional<ItemCarrito> buscarById(Long id) {
-        // TODO Auto-generated method stub
-        return itemCarritoRepository.findById(id);
-    }
-
-    @Override
+    @Transactional
     public void eliminar(Long id) {
-        // TODO Auto-generated method stub
         itemCarritoRepository.deleteById(id);
     }
 
     @Override
-    public List<ItemCarrito> buscarByCarrito(Carrito carrito) {
-        // TODO Auto-generated method stub
-        return itemCarritoRepository.findByCarrito(carrito);
+    @Transactional(readOnly = true)
+    public List<ItemCarritoResponseDTO> buscarByCarrito(Carrito carrito) {
+        return itemCarritoRepository.findByCarrito(carrito).stream()
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toList());
     }
 
-    //au8x
     private ItemCarrito convertToEntity(ItemCarritoRequestDTO dto) {
         ItemCarrito itemCarrito = new ItemCarrito();
         updateEntityFromDTO(itemCarrito, dto);
@@ -70,11 +70,11 @@ public class ItemCarritoService implements IItemCarritoService{
 
     private void updateEntityFromDTO(ItemCarrito itemCarrito, ItemCarritoRequestDTO dto) {
         Carrito carrito = carritoRepository.findById(dto.carritoId()).orElseThrow(
-                () -> new RuntimeException("no existe carrito con ese id")
+                () -> new RuntimeException("No existe carrito con ese id")
         );
-
-        ProdVariante prodVariante = prodVarianteRepository.findById(dto.prodVariableId()).orElseThrow(
-                () -> new RuntimeException("no existe producto variante con esa id")
+        System.out.println("ID VARIANTE"+dto.prodVarianteId());
+        ProdVariante prodVariante = prodVarianteRepository.findById(dto.prodVarianteId()).orElseThrow(
+                () -> new RuntimeException("No existe producto variante con esa id")
         );
 
         itemCarrito.setCarrito(carrito);
@@ -85,7 +85,6 @@ public class ItemCarritoService implements IItemCarritoService{
     @Override
     @Transactional
     public ItemCarritoResponseDTO create(ItemCarritoRequestDTO dto) {
-        // TODO Auto-generated method stub
         ItemCarrito itemCarrito = convertToEntity(dto);
         itemCarrito = itemCarritoRepository.save(itemCarrito);
         return convertToResponseDTO(itemCarrito);
@@ -94,7 +93,6 @@ public class ItemCarritoService implements IItemCarritoService{
     @Override
     @Transactional
     public Optional<ItemCarritoResponseDTO> update(Long id, ItemCarritoRequestDTO dto) {
-        // TODO Auto-generated method stub
         return itemCarritoRepository.findById(id).map(itemCarrito -> {
             updateEntityFromDTO(itemCarrito, dto);
             itemCarrito = itemCarritoRepository.save(itemCarrito);
@@ -103,16 +101,14 @@ public class ItemCarritoService implements IItemCarritoService{
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = true)
     public ItemCarritoResponseDTO convertToResponseDTO(ItemCarrito itemCarrito) {
-        // TODO Auto-generated method stub
         return new ItemCarritoResponseDTO(
-            itemCarrito.getId(),
-            itemCarrito.getCarrito().getId(),
-            prodVarianteService.convertToResponseDTO(itemCarrito.getProdVariante()),
-            itemCarrito.getCantidad(),
-            itemCarrito.getFecha()
+                itemCarrito.getId(),
+                itemCarrito.getCarrito().getId(),
+                prodVarianteService.convertToResponseDTO(itemCarrito.getProdVariante()),
+                itemCarrito.getCantidad()
         );
     }
-
 }
+

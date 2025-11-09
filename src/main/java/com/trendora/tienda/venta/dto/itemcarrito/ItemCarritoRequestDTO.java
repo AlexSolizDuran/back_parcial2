@@ -4,6 +4,6 @@ import java.io.Serializable;
 //lo que se pude
 public record ItemCarritoRequestDTO(
     Long carritoId,
-    long prodVariableId,
+    long prodVarianteId,
     Integer cantidad
 ) implements Serializable{}

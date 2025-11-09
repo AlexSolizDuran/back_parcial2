@@ -10,6 +10,5 @@ public record ItemCarritoResponseDTO(
     Long id,
     Long carritoId,
     ProdVarianteResponseDTO prodVariante,
-    Integer cantidad,
-    LocalDateTime fecha
+    Integer cantidad
 ) implements Serializable{}

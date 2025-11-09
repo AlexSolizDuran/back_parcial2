@@ -2,6 +2,7 @@ package com.trendora.tienda.venta.model;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 
@@ -25,7 +26,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "item_carrito")
-@Table(name = "item_carrito")
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -49,7 +50,8 @@ public class ItemCarrito {
     @OnDelete(action = OnDeleteAction.CASCADE)
     private ProdVariante prodVariante;
 
-    @Column(name = "fecha", nullable = false)
+    @Column(name = "fecha", nullable = false, updatable = false)
+    @CreationTimestamp // <-- AÑADE ESTA ANOTACIÓN
     private LocalDateTime fecha;
 
     @PrePersist

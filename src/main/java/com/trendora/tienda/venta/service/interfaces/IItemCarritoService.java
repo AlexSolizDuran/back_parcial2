@@ -9,12 +9,13 @@ import com.trendora.tienda.venta.model.Carrito;
 import com.trendora.tienda.venta.model.ItemCarrito;
 
 public interface IItemCarritoService {
-    List<ItemCarrito> listarTodo();
-    Optional<ItemCarrito> buscarById(Long id);
+    List<ItemCarritoResponseDTO> listarTodo();
+    Optional<ItemCarritoResponseDTO> buscarById(Long id);
     void eliminar(Long id);
-    List<ItemCarrito> buscarByCarrito(Carrito carrito);
+    List<ItemCarritoResponseDTO> buscarByCarrito(Carrito carrito);
 
     ItemCarritoResponseDTO create(ItemCarritoRequestDTO dto);
     Optional<ItemCarritoResponseDTO> update(Long id, ItemCarritoRequestDTO dto);
     ItemCarritoResponseDTO convertToResponseDTO(ItemCarrito itemCarrito);
 }
+

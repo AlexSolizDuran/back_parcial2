@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -117,13 +119,9 @@ public class UsuarioService {
     }
 
     private UsuarioListDTO convertirAListDTO(Usuario usuario) {
-        UsuarioListDTO dto = new UsuarioListDTO();
-        dto.setId(usuario.getId());
-        dto.setUsername(usuario.getUsername());
-        dto.setNombre(usuario.getNombre());
-        dto.setApellido(usuario.getApellido());
-        dto.setEmail(usuario.getEmail());
-        dto.setRolNombre(usuario.getRol().getNombre());
+        UsuarioListDTO dto = new UsuarioListDTO(usuario.getId(), usuario.getUsername(), usuario.getNombre(),
+                usuario.getApellido(), usuario.getEmail(), usuario.getRol().getNombre());
+        
         return dto;
     }
 
@@ -144,5 +142,15 @@ public class UsuarioService {
             // Temporalmente (BORRA ESTO DESPUÉS):
             // usuario.setPassword(dto.getPassword());
         }
+    }
+    public Page<UsuarioListDTO> obtenerUsuariosPaginados(Pageable pageable) {
+        return usuarioRepository.findAllProyectado(pageable);
+    }
+
+    /**
+     * Método para el endpoint GET /api/usuarios?rol=CLIENTE (paginado)
+     */
+    public Page<UsuarioListDTO> obtenerUsuariosPorRolPaginados(String rolNombre, Pageable pageable) {
+        return usuarioRepository.findByRol_NombreProyectado(rolNombre, pageable);
     }
 }

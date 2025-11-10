@@ -4,9 +4,10 @@ package com.trendora.tienda.usuario.controller;
 // ¡AQUÍ ESTÁ EL CAMBIO! La ruta al DTO es más específica.
 //
 import java.net.URI;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,18 +44,23 @@ public class UsuarioController {
     }
 
   @GetMapping
-    public ResponseEntity<List<UsuarioListDTO>> obtenerUsuarios(
-            @RequestParam(name = "rol", required = false) String rolNombre
+    public ResponseEntity<Page<UsuarioListDTO>> obtenerUsuarios( // <-- CAMBIO 1: De List a Page
+            @RequestParam(name = "rol", required = false) String rolNombre,
+            Pageable pageable // <-- CAMBIO 2: Añadir Pageable
     ) {
-        List<UsuarioListDTO> usuarios;
+        
+        Page<UsuarioListDTO> paginaDeUsuarios; // <-- CAMBIO 3: Usar Page<>
 
         if (rolNombre != null && !rolNombre.isEmpty()) {
-            usuarios = usuarioService.obtenerUsuariosPorRol(rolNombre);
+            // CAMBIO 4: Llamar al servicio paginado
+            paginaDeUsuarios = usuarioService.obtenerUsuariosPorRolPaginados(rolNombre, pageable);
         } else {
-            usuarios = usuarioService.obtenerTodosLosUsuarios();
+            // CAMBIO 5: Llamar al servicio paginado
+            paginaDeUsuarios = usuarioService.obtenerUsuariosPaginados(pageable);
         }
 
-        return ResponseEntity.ok(usuarios);
+        // Devolvemos la estructura Page<> completa, que SWR sabe cómo interpretar
+        return ResponseEntity.ok(paginaDeUsuarios);
     }
 
     // --- READ (Uno por ID) ---

@@ -4,6 +4,7 @@ package com.trendora.tienda.usuario.controller;
 // ¡AQUÍ ESTÁ EL CAMBIO! La ruta al DTO es más específica.
 //
 import java.net.URI;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -40,15 +41,15 @@ public class UsuarioController {
     ) {
         UsuarioResponseDTO responseDTO = usuarioService.crearUsuario(requestDTO);
         return ResponseEntity.created(URI.create("/usuario/usuario/" + responseDTO.getId()))
-                             .body(responseDTO);
+                .body(responseDTO);
     }
 
-  @GetMapping
-    public ResponseEntity<Page<UsuarioListDTO>> obtenerUsuarios( // <-- CAMBIO 1: De List a Page
+    @GetMapping("/paginado")
+    public ResponseEntity<Page<UsuarioListDTO>> obtenerUsuariosPaginado( // <-- CAMBIO 1: De List a Page
             @RequestParam(name = "rol", required = false) String rolNombre,
             Pageable pageable // <-- CAMBIO 2: Añadir Pageable
     ) {
-        
+
         Page<UsuarioListDTO> paginaDeUsuarios; // <-- CAMBIO 3: Usar Page<>
 
         if (rolNombre != null && !rolNombre.isEmpty()) {
@@ -57,6 +58,25 @@ public class UsuarioController {
         } else {
             // CAMBIO 5: Llamar al servicio paginado
             paginaDeUsuarios = usuarioService.obtenerUsuariosPaginados(pageable);
+        }
+
+        // Devolvemos la estructura Page<> completa, que SWR sabe cómo interpretar
+        return ResponseEntity.ok(paginaDeUsuarios);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<UsuarioListDTO>> obtenerUsuarios( // <-- CAMBIO 1: De List a Page
+            @RequestParam(name = "rol", required = false) String rolNombre
+    ) {
+
+        List<UsuarioListDTO> paginaDeUsuarios; // <-- CAMBIO 3: Usar Page<>
+
+        if (rolNombre != null && !rolNombre.isEmpty()) {
+            // CAMBIO 4: Llamar al servicio paginado
+            paginaDeUsuarios = usuarioService.obtenerUsuariosPorRol(rolNombre);
+        } else {
+            // CAMBIO 5: Llamar al servicio paginado
+            paginaDeUsuarios = usuarioService.obtenerTodosLosUsuarios();
         }
 
         // Devolvemos la estructura Page<> completa, que SWR sabe cómo interpretar
@@ -73,7 +93,7 @@ public class UsuarioController {
     // --- UPDATE ---
     @PutMapping("/{id}")
     public ResponseEntity<UsuarioResponseDTO> actualizarUsuario(
-            @PathVariable Long id, 
+            @PathVariable Long id,
             @Valid @RequestBody UsuarioRequestDTO requestDTO
     ) {
         UsuarioResponseDTO responseDTO = usuarioService.actualizarUsuario(id, requestDTO);

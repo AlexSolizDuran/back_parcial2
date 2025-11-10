@@ -71,7 +71,7 @@ public class VentaController {
         }
     }
 
-    @GetMapping("/porcliente/{clienteid}")
+    @GetMapping("/porcliente/{clienteId}")
     public ResponseEntity<List<VentaResponseDTO>> getVentaByClienteId(@PathVariable Long clienteId) {
         List<VentaResponseDTO> listaVentasByCliente = ventaService.buscarByCliente(new Usuario(clienteId))
                 .stream()
@@ -80,7 +80,7 @@ public class VentaController {
         return ResponseEntity.ok(listaVentasByCliente);
     }
 
-    @GetMapping("/porvendedor/{vendedorid}")
+    @GetMapping("/porvendedor/{vendedorId}")
     public ResponseEntity<List<VentaResponseDTO>> getVentaByVendedorId(@PathVariable Long vendedorId) {
         List<VentaResponseDTO> listaVentaByVendedor = ventaService.buscarByVendedor(new Usuario(vendedorId))
                 .stream().map(ventaService::convertToResponseDTO).toList();

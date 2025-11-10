@@ -73,8 +73,9 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>42.6.0</version>
+			<version>42.7.7</version>
 		</dependency>
+		<!-- ESTA PARTE ES PARA HIBERNATE-->
 
 		<dependency>
 			<groupId>org.hibernate.orm</groupId>
@@ -109,6 +110,7 @@
 			<artifactId>opencsv</artifactId>
 			<version>5.9</version>
 		</dependency>
+		
 	</dependencies>
 
 	<build>

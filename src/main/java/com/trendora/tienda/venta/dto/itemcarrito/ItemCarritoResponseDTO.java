@@ -7,8 +7,10 @@ import com.trendora.tienda.inventario.dto.prodVariante.ProdVarianteResponseDTO;
 
 //lo que se da
 public record ItemCarritoResponseDTO(
-    Long id,
-    Long carritoId,
-    ProdVarianteResponseDTO prodVariante,
-    Integer cantidad
-) implements Serializable{}
+        Long id,
+        Long carritoId,
+        ProdVarianteResponseDTO prodVariante,
+        Integer cantidad
+        ) implements Serializable {
+
+}

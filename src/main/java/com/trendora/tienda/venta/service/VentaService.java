@@ -18,18 +18,19 @@ import com.trendora.tienda.venta.service.interfaces.IVentaService;
 
 @Service
 public class VentaService implements IVentaService {
-
+    
     @Autowired
     private VentaRepository ventaRepository;
 
     @Autowired
     private UsuarioRepository usuarioRepository;
 
+
     @Override
     public List<Venta> listarTodo() {
         return ventaRepository.findAll();
-    }
-
+    } 
+    
     @Override
     public Optional<Venta> buscarById(Long id) {
         return ventaRepository.findById(id);
@@ -49,7 +50,7 @@ public class VentaService implements IVentaService {
     public List<Venta> buscarByCliente(Usuario clienteID) {
         return ventaRepository.findByCliente(clienteID);
     }
-
+    
     @Override
     public List<Venta> buscarByVendedor(Usuario vendedorID) {
         return ventaRepository.findByVendedor(vendedorID);

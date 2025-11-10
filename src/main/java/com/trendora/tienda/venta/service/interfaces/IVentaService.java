@@ -1,6 +1,8 @@
 package com.trendora.tienda.venta.service.interfaces;
 
 import com.trendora.tienda.usuario.model.Usuario;
+import com.trendora.tienda.venta.dto.CheckoutRequestDTO;
+import com.trendora.tienda.venta.dto.CheckoutResponseDTO;
 import com.trendora.tienda.venta.dto.VentaRequestDTO;
 import com.trendora.tienda.venta.dto.VentaResponseDTO;
 import com.trendora.tienda.venta.model.Venta;
@@ -37,6 +39,9 @@ public interface IVentaService {
 
     long contarByEstadoPedido(String estadoPedido);
     ////////////
+    CheckoutResponseDTO generarPagoLibelula(CheckoutRequestDTO dto, Long clienteId);
+    void confirmarPago(Long ventaId, String libelulaTransactionId);
+    /// 
 
     VentaResponseDTO create(VentaRequestDTO dto);
     Optional<VentaResponseDTO> update(Long id, VentaRequestDTO dto);

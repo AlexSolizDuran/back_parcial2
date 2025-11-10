@@ -1,7 +1,6 @@
 package com.trendora.tienda.venta.dto.itemcarrito;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 import com.trendora.tienda.inventario.dto.prodVariante.ProdVarianteResponseDTO;
 

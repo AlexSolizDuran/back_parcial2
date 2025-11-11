@@ -7,8 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.trendora.tienda.inventario.dto.prodVariante.ProdVarianteResponseDTO;
 import com.trendora.tienda.inventario.model.ProdVariante;
 import com.trendora.tienda.inventario.repository.ProdVarianteRepository;
+import com.trendora.tienda.inventario.service.interfaces.IProdVarianteService;
 import com.trendora.tienda.venta.dto.detalleventa.DetalleVentaRequestDTO;
 import com.trendora.tienda.venta.dto.detalleventa.DetalleVentaResponseDTO;
 import com.trendora.tienda.venta.model.DetalleVenta;
@@ -28,6 +30,9 @@ public class DetalleVentaService implements IDetalleVentaService{
 
     @Autowired
     private ProdVarianteRepository prodVarianteRepository;
+
+    @Autowired
+    private IProdVarianteService prodVarianteService;
 
     @Override
     public List<DetalleVentaResponseDTO> listarTodo() {
@@ -110,6 +115,8 @@ public class DetalleVentaService implements IDetalleVentaService{
     @Override
     @Transactional
     public DetalleVentaResponseDTO convertToResponseDTO(DetalleVenta detalleVenta) {
+        ProdVarianteResponseDTO prodVarianteDTO = prodVarianteService.convertToResponseDTO(detalleVenta.getProdVariante());
+        
         return new DetalleVentaResponseDTO(
             detalleVenta.getId(),
             detalleVenta.getCantidad(),
@@ -117,7 +124,7 @@ public class DetalleVentaService implements IDetalleVentaService{
             detalleVenta.getDescuento(),
             detalleVenta.getSubtotal(),
             detalleVenta.getVenta().getId(),
-            detalleVenta.getProdVariante().getId()
+            prodVarianteDTO // <-- El 7mo argumento es el objeto
         );
     }
     

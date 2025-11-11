@@ -169,6 +169,7 @@ public class ProductoService implements IProductoService {
         producto.setCategoria(categoria);
         producto.setMaterial(material);
         producto.setEtiquetas(etiquetas);
+        producto.setImagen(dto.imagen());
     }
 
     @Override

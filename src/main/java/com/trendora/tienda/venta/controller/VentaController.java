@@ -17,6 +17,9 @@ import com.trendora.tienda.venta.dto.CheckoutResponseDTO;
 import com.trendora.tienda.venta.dto.VentaRequestDTO;
 import com.trendora.tienda.venta.dto.VentaResponseDTO;
 import com.trendora.tienda.venta.service.interfaces.IVentaService;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/venta/venta")
@@ -130,6 +133,16 @@ public class VentaController {
         return ResponseEntity.ok(listaVentaByEstado);
     }
 
+    @GetMapping("/porclienteyestado")
+    public ResponseEntity<List<VentaResponseDTO>> getVenetaByClienteAndEstado(@RequestParam Long clienteId, @RequestParam String estado) {
+        Usuario cliente = usuarioRepository.findById(clienteId).orElseThrow(
+            () -> new RuntimeException("no hay usuario")
+        );
+        List<VentaResponseDTO> listaRespuesta = ventaService.buscarByClienteYEstadoPedido(cliente, estado).stream()
+        .map(ventaService::convertToResponseDTO).toList();
+        return ResponseEntity.ok(listaRespuesta);
+    }
+    
     @GetMapping("/entrefecha") // /ventas/entrefecha?inicio=2025-11-01T00:00:00&fin=2025-11-06T23:59:59
     public ResponseEntity<List<VentaResponseDTO>> getVentraBetweenfecha(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fechainicio,

@@ -136,7 +136,7 @@ public class UsuarioService {
         usuario.setTelefono(dto.getTelefono());
         usuario.setRol(rol);
 
-        if (dto.getPassword() != null && !dto.getPassword().isEmpty()) {
+        if (dto.getPassword() != null && !dto.getPassword().isEmpty() && !dto.getPassword().equals("defaultpassword")) {
             usuario.setPassword(passwordEncoder.encode(dto.getPassword()));
 
             // Temporalmente (BORRA ESTO DESPUÉS):

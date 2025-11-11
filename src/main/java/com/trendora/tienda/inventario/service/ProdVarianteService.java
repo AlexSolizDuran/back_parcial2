@@ -93,7 +93,6 @@ public class ProdVarianteService implements IProdVarianteService {
         prodVariante.setColor(color);
         prodVariante.setTalla(talla);
         prodVariante.setCosto(dto.costo());
-        prodVariante.setPpp(dto.ppp());
         prodVariante.setPrecio(dto.precio());
         prodVariante.setSku(dto.sku());
         prodVariante.setStock(dto.stock());
@@ -108,6 +107,7 @@ public class ProdVarianteService implements IProdVarianteService {
                 tallaService.convertToResponseDTO(pv.getTalla()),
                 pv.getCosto(),
                 pv.getPpp(),
+                pv.getPpv(),
                 pv.getPrecio(),
                 pv.getSku(),
                 pv.getStock()
@@ -122,7 +122,6 @@ public class ProdVarianteService implements IProdVarianteService {
                 pv.getColor().getId(),
                 pv.getTalla().getId(),
                 pv.getCosto(),
-                pv.getPpp(),
                 pv.getPrecio(),
                 pv.getSku(),
                 pv.getStock()

@@ -1,14 +1,24 @@
 package com.trendora.tienda.producto.controller;
 
-import com.trendora.tienda.producto.dto.producto.ProductoRequestDTO;
-import com.trendora.tienda.producto.dto.producto.ProductoResponseDTO;
-import com.trendora.tienda.producto.service.interfaces.IProductoService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
+import com.trendora.tienda.producto.dto.producto.ProductoRequestDTO;
+import com.trendora.tienda.producto.dto.producto.ProductoResponseDTO;
+import com.trendora.tienda.producto.service.interfaces.IProductoService;
 
 @RestController
 @RequestMapping("/producto/producto")
@@ -30,16 +40,41 @@ public class ProductoController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductoResponseDTO> createProducto(@RequestBody ProductoRequestDTO productoRequestDTO) {
-        ProductoResponseDTO createdProducto = productoService.create(productoRequestDTO);
-        return new ResponseEntity<>(createdProducto, HttpStatus.CREATED);
+    public ResponseEntity<ProductoResponseDTO> createProducto(
+            @RequestPart("producto") ProductoRequestDTO productoRequestDTO,
+            @RequestPart(value = "imagen", required = false) MultipartFile imagen) {
+
+        // 1. Crear el producto solo con los datos
+        ProductoResponseDTO productoCreado = productoService.create(productoRequestDTO);
+
+        // 2. Si hay imagen, guardarla por separado
+        if (imagen != null && !imagen.isEmpty()) {
+            // ejemplo: guardamos la imagen en un folder y asociamos al producto
+            //String rutaImagen = imagenService.guardarImagen(productoCreado.getId(), imagen);
+            //productoCreado.setImagenUrl(rutaImagen); // actualizar DTO con URL
+        }
+
+        return new ResponseEntity<>(productoCreado, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductoResponseDTO> updateProducto(@PathVariable Long id, @RequestBody ProductoRequestDTO productoRequestDTO) {
-        return productoService.update(id, productoRequestDTO)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<ProductoResponseDTO> updateProducto(
+            @PathVariable Long id,
+            @RequestPart("producto") ProductoRequestDTO productoRequestDTO,
+            @RequestPart(value = "imagen", required = false) MultipartFile imagen) {
+
+        // 1. Actualizar solo los datos del producto
+        ProductoResponseDTO productoActualizado = productoService.update(id, productoRequestDTO)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado"));
+
+        // 2. Si hay imagen, guardarla por separado
+        if (imagen != null && !imagen.isEmpty()) {
+            // Ejemplo: guardar la imagen en un folder y asociarla al producto
+            // String rutaImagen = imagenService.guardarImagen(productoActualizado.getId(), imagen);
+            // productoActualizado.setImagenUrl(rutaImagen);
+        }
+
+        return ResponseEntity.ok(productoActualizado);
     }
 
     @DeleteMapping("/{id}")

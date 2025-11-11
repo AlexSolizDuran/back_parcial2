@@ -13,8 +13,10 @@ public record ProdVarianteResponseDTO(
         TallaResponseDTO talla,
         BigDecimal costo,
         BigDecimal ppp,
+        BigDecimal ppv,
         BigDecimal precio,
         String sku,
         Integer stock
-) {
+        ) {
+
 }

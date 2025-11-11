@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -51,6 +52,9 @@ public class ProdVariante {
     @Column(name = "ppp")
     private BigDecimal ppp;
 
+    @Column(name = "ppv")
+    private BigDecimal ppv;
+
     @Column(nullable = false)
     private BigDecimal precio;
 
@@ -60,7 +64,17 @@ public class ProdVariante {
     @Column(nullable = false)
     private Integer stock;
 
-    public ProdVariante(Long id){
+    public ProdVariante(Long id) {
         this.id = id;
+    }
+
+    @PrePersist
+    public void setPppAndPpv() {
+        if (this.ppp == null) {
+            this.ppp = this.costo;
+        }
+        if (this.ppv == null) {
+            this.ppv = this.precio;
+        }
     }
 }

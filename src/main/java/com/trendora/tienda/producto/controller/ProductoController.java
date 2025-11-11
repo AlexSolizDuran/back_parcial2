@@ -1,5 +1,6 @@
 package com.trendora.tienda.producto.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.trendora.tienda.producto.dto.producto.ProductoRequestDTO;
 import com.trendora.tienda.producto.dto.producto.ProductoResponseDTO;
 import com.trendora.tienda.producto.service.interfaces.IProductoService;
+import com.trendora.tienda.service.CloudinaryService;
 
 @RestController
 @RequestMapping("/producto/producto")
@@ -26,6 +28,9 @@ public class ProductoController {
 
     @Autowired
     private IProductoService productoService;
+
+    @Autowired
+    private CloudinaryService cloudinaryService;
 
     @GetMapping
     public ResponseEntity<List<ProductoResponseDTO>> getAllProductos() {
@@ -44,15 +49,31 @@ public class ProductoController {
             @RequestPart("producto") ProductoRequestDTO productoRequestDTO,
             @RequestPart(value = "imagen", required = false) MultipartFile imagen) {
 
-        // 1. Crear el producto solo con los datos
-        ProductoResponseDTO productoCreado = productoService.create(productoRequestDTO);
+        String urlImagen = null;
 
-        // 2. Si hay imagen, guardarla por separado
+        // 3.1. Si la imagen existe, subirla a Cloudinary
         if (imagen != null && !imagen.isEmpty()) {
-            // ejemplo: guardamos la imagen en un folder y asociamos al producto
-            //String rutaImagen = imagenService.guardarImagen(productoCreado.getId(), imagen);
-            //productoCreado.setImagenUrl(rutaImagen); // actualizar DTO con URL
+            try {
+                urlImagen = cloudinaryService.uploadImagen(imagen);
+            } catch (Exception e) {
+                // Manejo básico de error si la subida falla
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al subir la imagen", e);
+            }
         }
+
+        // 3.2. Crear un NUEVO DTO con la URL (porque el 'record' es inmutable)
+        //      Usamos la URL de Cloudinary (o null si no se subió imagen)
+        ProductoRequestDTO dtoConImagen = new ProductoRequestDTO(
+                productoRequestDTO.descripcion(),
+                urlImagen, // <-- Aquí se usa la URL de Cloudinary
+                productoRequestDTO.modelo(),
+                productoRequestDTO.categoria(),
+                productoRequestDTO.material(),
+                productoRequestDTO.etiquetas()
+        );
+
+        // 3.3. Guardar el producto con la URL de la imagen
+        ProductoResponseDTO productoCreado = productoService.create(dtoConImagen);
 
         return new ResponseEntity<>(productoCreado, HttpStatus.CREATED);
     }
@@ -63,15 +84,49 @@ public class ProductoController {
             @RequestPart("producto") ProductoRequestDTO productoRequestDTO,
             @RequestPart(value = "imagen", required = false) MultipartFile imagen) {
 
-        // 1. Actualizar solo los datos del producto
-        ProductoResponseDTO productoActualizado = productoService.update(id, productoRequestDTO)
+        // 1. Obtener los datos del producto ANTES de actualizar
+        ProductoResponseDTO productoExistente = productoService.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Producto no encontrado"));
 
-        // 2. Si hay imagen, guardarla por separado
+        String urlImagenParaGuardar = productoExistente.imagen(); // Mantenemos la URL antigua por defecto
+        String urlImagenAntiguaParaBorrar = null;
+
+        // 2. Si se está subiendo una NUEVA imagen...
         if (imagen != null && !imagen.isEmpty()) {
-            // Ejemplo: guardar la imagen en un folder y asociarla al producto
-            // String rutaImagen = imagenService.guardarImagen(productoActualizado.getId(), imagen);
-            // productoActualizado.setImagenUrl(rutaImagen);
+            try {
+                // Guardamos la URL antigua para borrarla DESPUÉS de subir la nueva
+                urlImagenAntiguaParaBorrar = productoExistente.imagen();
+
+                // Subimos la nueva imagen
+                urlImagenParaGuardar = cloudinaryService.uploadImagen(imagen);
+
+            } catch (Exception e) {
+                throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Error al subir la nueva imagen", e);
+            }
+        }
+
+        // 3. Crear el DTO con la información actualizada (incluida la nueva URL)
+        ProductoRequestDTO dtoConImagenActualizada = new ProductoRequestDTO(
+                productoRequestDTO.descripcion(),
+                urlImagenParaGuardar, // <-- Aquí va la URL nueva (o la antigua si no se subió nada)
+                productoRequestDTO.modelo(),
+                productoRequestDTO.categoria(),
+                productoRequestDTO.material(),
+                productoRequestDTO.etiquetas()
+        );
+
+        // 4. Guardar el producto en la BBDD con la nueva URL
+        ProductoResponseDTO productoActualizado = productoService.update(id, dtoConImagenActualizada)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Error al actualizar el producto en BBDD"));
+
+        // 5. SI TODO SALIÓ BIEN (subida y BBDD), borramos la imagen antigua
+        if (urlImagenAntiguaParaBorrar != null) {
+            try {
+                cloudinaryService.eliminarImagen(urlImagenAntiguaParaBorrar);
+            } catch (IOException e) {
+                // La app funcionó, pero falló el borrado. Solo log.
+                System.err.println("Error al borrar la imagen antigua de Cloudinary: " + e.getMessage());
+            }
         }
 
         return ResponseEntity.ok(productoActualizado);
@@ -80,7 +135,7 @@ public class ProductoController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProducto(@PathVariable Long id) {
         if (productoService.findById(id).isPresent()) {
-            productoService.delete(id);
+            productoService.delete(id); // <-- Esto ya llama a nuestra nueva lógica
             return ResponseEntity.noContent().build();
         } else {
             return ResponseEntity.notFound().build();

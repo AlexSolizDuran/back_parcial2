@@ -36,6 +36,3 @@ EXPOSE 8080
 
 # El comando para iniciar la aplicación cuando el contenedor arranque
 ENTRYPOINT ["java", "-jar", "app.jar"]
-```eof
-
-Reemplaza el contenido de tu `Dockerfile` con este código y vuelve a intentar construir la imagen. El error `Permission denied` desaparecerá.

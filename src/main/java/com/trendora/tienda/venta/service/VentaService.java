@@ -241,7 +241,7 @@ public class VentaService implements IVentaService {
             // Preparamos el payload como DATOS DE FORMULARIO (igual que en Python)
             
             String libelulaApiUrl = "https://api.libelula.bo/rest/deuda/registrar";             
-            String appBackendUrl = "https://jeffry-sorriest-benny.ngrok-free.dev"; // (Quitado el / al final) //cambiar por url backend
+            String appBackendUrl = "https://backparcial2-393159630636.northamerica-south1.run.app"; // (Quitado el / al final) //cambiar por url backend
             String callbackUrl = appBackendUrl + "/venta/venta/libelula-callback?myVentaId=" + savedVenta.getId();
 
             // 1. Crear el payload como MultiValueMap (para form-urlencoded)

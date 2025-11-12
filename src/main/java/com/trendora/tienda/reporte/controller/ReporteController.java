@@ -22,11 +22,13 @@ public class ReporteController {
 
     @Autowired
     private ReporteService reporteService;
-
+    
     /**
      * ENDPOINT 1: /datos
-     * Retorna los datos como JSON para que el frontend arme una tabla o un gráfico.
-     * Se usa cuando el formato es 'json' o cuando el usuario solo quiere ver el reporte.
+     * Recibe un prompt (IaRequestDTO) y retorna los datos brutos del reporte
+     * (List<Map<String, Object>>) como JSON. Usado para frontend tables/charts.
+     * * RUTA FRONTEND: POST /api/reporte/datos
+     * RUTA BACKEND: POST /v1/reporte/datos
      */
     @PostMapping("/datos")
     public ResponseEntity<List<Map<String, Object>>> obtenerDatosTabla(@RequestBody IaRequestDTO request) {
@@ -38,8 +40,10 @@ public class ReporteController {
 
     /**
      * ENDPOINT 2: /descargar
-     * Retorna el archivo binario (PDF/Excel) para que el navegador lo descargue.
-     * Se usa cuando el prompt de la IA contiene 'pdf', 'excel', o 'json'.
+     * Recibe un prompt (IaRequestDTO) que debe especificar el formato
+     * (ej. "en PDF") y retorna el archivo binario para su descarga.
+     * * RUTA FRONTEND: POST /api/reporte/descargar
+     * RUTA BACKEND: POST /v1/reporte/descargar
      */
     @PostMapping("/descargar")
     public ResponseEntity<byte[]> descargarReporte(@RequestBody IaRequestDTO request) {

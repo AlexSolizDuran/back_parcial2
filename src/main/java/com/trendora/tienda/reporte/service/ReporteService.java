@@ -24,95 +24,99 @@ public class ReporteService {
 
     private final RestClient restClient;
     private final JdbcTemplate jdbcTemplate;
-    private final ObjectMapper objectMapper; // Para manejar la serialización de JSON
+    private final ObjectMapper objectMapper;
 
-    // Inyección de los generadores por su nombre de Bean
     @Autowired
-    @Qualifier("pdfGenerator") 
+    @Qualifier("pdfGenerator")
     private IReportGenerator pdfGenerator;
-    
+
     @Autowired
-    @Qualifier("excelGenerator") 
+    @Qualifier("excelGenerator")
     private IReportGenerator excelGenerator;
 
-    public ReporteService(RestClient restClient, JdbcTemplate jdbcTemplate, ObjectMapper objectMapper) {
+    // --- INICIO DE LA CORRECCIÓN ---
+    // Inyectamos RestClient, JdbcTemplate y ObjectMapper
+    // Añadimos @Qualifier para especificar qué bean de RestClient queremos inyectar
+    public ReporteService(@Qualifier("aiRestClient") RestClient restClient, JdbcTemplate jdbcTemplate, ObjectMapper objectMapper) {
         this.restClient = restClient;
         this.jdbcTemplate = jdbcTemplate;
         this.objectMapper = objectMapper;
     }
+    // --- FIN DE LA CORRECCIÓN ---
 
     /**
-     * Paso 1: Llama al microservicio de Python (Factor común para ambos endpoints).
+     * Paso 1: Llama al microservicio de Python. Esta función contiene la lógica
+     * que está fallando.
      */
-    private IaResponseDTO obtenerRespuestaDeIa(String promptUsuario) {
-        String promptParaIa = "generar JSON: " + promptUsuario;
-        IaRequestDTO requestBody = new IaRequestDTO(promptParaIa);
-        System.out.println("XXXXXXXXXXXXXXXXXXXXX " + requestBody + " XXXXXXXXXXXXXXX");
+    private IaResponseDTO obtenerRespuestaDeIa(String prompt) {
 
-        // Llamada síncrona al microservicio de FastAPI
-        return restClient.post()
-                .uri("/generar-sql")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(requestBody)
-                .retrieve()
-                .body(IaResponseDTO.class); 
+        // 1. Prepara el prompt que espera el modelo T5 ("generar JSON: ...")
+        IaRequestDTO requestBody = new IaRequestDTO("generar JSON: "+prompt);
+
+        // --- INICIO CAMBIO ---
+        // Construimos la cadena JSON manualmente para evitar el problema de serialización
+        String jsonBody = "{\"prompt\": \"" + requestBody.prompt() + "\"}";
+        System.out.println("Enviando cuerpo JSON manual: " + jsonBody);
+        // --- FIN CAMBIO ---
+
+        try {
+            return restClient.post()
+                    .uri("/generar-sql")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(jsonBody) // <--- Enviamos la cadena String directamente
+                    .retrieve()
+                    .body(IaResponseDTO.class);
+        } catch (Exception e) {
+            // Captura el error y lanza una excepción más amigable para el frontend
+            System.err.println("ERROR al conectar/procesar con microservicio AI: " + e.getMessage());
+            // Si el error es 422, indica un problema en el lado del microservicio Python.
+            throw new RuntimeException("Error en la validación del microservicio AI. El campo 'prompt' no fue aceptado.", e);
+        }
     }
 
-    /**
-     * [ENDPOINT 1: TABLA / JSON] Obtiene el SQL de la IA y devuelve los datos brutos.
-     * Usado por el frontend para ARMOR LA TABLA o para datos simples.
-     */
+    // El resto de la clase ReporteService permanece sin cambios
     @Transactional(readOnly = true)
     public List<Map<String, Object>> obtenerDatosTabla(String prompt) {
-        
+
         IaResponseDTO respuestaDeIa = obtenerRespuestaDeIa(prompt);
-        
+
         if (respuestaDeIa == null || respuestaDeIa.sql() == null || respuestaDeIa.sql().isEmpty()) {
             throw new RuntimeException("La IA no pudo generar un SQL válido.");
         }
-        
-        // Ejecutar el SQL y devolver la lista de resultados
+
         return jdbcTemplate.queryForList(respuestaDeIa.sql());
     }
 
-    /**
-     * [ENDPOINT 2: ARCHIVO BINARIO] Llama a la IA, ejecuta el SQL, y genera el archivo.
-     * Usado para descargar PDF o Excel.
-     */
     @Transactional(readOnly = true)
     public ReporteGeneradoDTO generarArchivoReporte(String prompt) {
-        
+
         IaResponseDTO respuestaDeIa = obtenerRespuestaDeIa(prompt);
-        
+
         if (respuestaDeIa == null || respuestaDeIa.sql() == null || respuestaDeIa.sql().isEmpty()) {
             throw new RuntimeException("La IA no pudo generar un SQL válido.");
         }
 
-        // Ejecutar SQL
         List<Map<String, Object>> datosReporte = jdbcTemplate.queryForList(respuestaDeIa.sql());
-        
+
         String formato = respuestaDeIa.formato().toLowerCase();
         String nombreBase = "reporte_" + LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
 
-        // Delegar la generación
         switch (formato) {
             case "pdf":
                 return pdfGenerator.generar(datosReporte, nombreBase);
-                
+
             case "excel":
                 return excelGenerator.generar(datosReporte, nombreBase);
-                
+
             case "json":
-                // Si el usuario pide JSON para descarga (Opción avanzada)
                 try {
                     byte[] jsonBytes = objectMapper.writeValueAsBytes(datosReporte);
                     return new ReporteGeneradoDTO(jsonBytes, "application/json", nombreBase + ".json");
                 } catch (Exception e) {
                     throw new RuntimeException("Error al serializar a JSON", e);
                 }
-                
+
             default:
-                // Si la IA devuelve un formato que no manejamos
                 throw new UnsupportedOperationException("Formato de archivo '" + formato + "' no soportado.");
         }
     }

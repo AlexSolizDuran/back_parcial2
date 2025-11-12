@@ -38,7 +38,7 @@ public class Venta {
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @Column(name = "numero_venta", nullable = false, unique = true)
+    @Column(name = "numero_venta", nullable = false, unique = true) //
     private Long numeroVenta;
 
     @Column(name = "fecha_venta", nullable = false)
@@ -55,6 +55,9 @@ public class Venta {
 
     @Column(name = "estado_pedido", nullable = false)
     private String estadoPedido;  //pendiente, enviado, entregado, cancelado
+
+    @Column(name = "libelula_transaction_id", unique = true)
+    private String libelulaTransactionId;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "cliente_id", nullable = false, referencedColumnName = "id", foreignKey = @ForeignKey(name = "fk_usuario_cli"))

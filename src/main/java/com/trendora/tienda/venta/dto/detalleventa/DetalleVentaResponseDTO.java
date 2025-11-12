@@ -1,6 +1,7 @@
 package com.trendora.tienda.venta.dto.detalleventa;
 
 import java.io.Serializable;
+import com.trendora.tienda.inventario.dto.prodVariante.ProdVarianteResponseDTO;
 
 public record DetalleVentaResponseDTO(
     Long id,
@@ -9,6 +10,6 @@ public record DetalleVentaResponseDTO(
     Double descuento,
     Double subtotal,
     Long ventaId,
-    Long prodVarianteId
+    ProdVarianteResponseDTO prodVariante
 
 ) implements Serializable{}

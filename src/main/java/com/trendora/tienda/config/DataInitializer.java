@@ -3,9 +3,13 @@ package com.trendora.tienda.config;
 import com.trendora.tienda.service.seeding.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
+
+    @Value("${libelula.appkey}")
+    private String libelulaAppKey;
 
     private final RolSeedingService roleSeedingService;
     private final UsuarioSeedingService userSeedingService;
@@ -51,6 +55,19 @@ public class DataInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+
+        System.out.println("=========================================");
+        System.out.println("--- VALIDANDO CONFIGURACIÓN DE LIBÉLULA ---");
+
+        if (libelulaAppKey == null || libelulaAppKey.isEmpty()) {
+            System.err.println("[ERROR] 'libelula.appkey' NO ESTÁ CONFIGURADA. Revisa tu application.properties.");
+        } else {
+            System.out.println("[OK] 'libelula.appkey' cargada exitosamente: " + libelulaAppKey.substring(0, 4) + "...");
+        }
+
+        System.out.println("=========================================");
+
+
         System.out.println("--- INICIO DE CARGA DE DATOS INICIALES ---");
 
         roleSeedingService.seedRoles();

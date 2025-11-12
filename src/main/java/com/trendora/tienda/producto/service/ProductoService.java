@@ -1,5 +1,6 @@
 package com.trendora.tienda.producto.service;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +24,7 @@ import com.trendora.tienda.producto.repository.MaterialRepository;
 import com.trendora.tienda.producto.repository.ModeloRepository;
 import com.trendora.tienda.producto.repository.ProductoRepository;
 import com.trendora.tienda.producto.service.interfaces.IProductoService;
+import com.trendora.tienda.service.CloudinaryService;
 
 @Service
 public class ProductoService implements IProductoService {
@@ -30,6 +32,8 @@ public class ProductoService implements IProductoService {
     @Autowired
     private ProductoRepository productoRepository;
 
+    @Autowired
+    private CloudinaryService cloudinaryService;
     // --- CAMBIO: Inyectar repositorios para buscar entidades por ID ---
     @Autowired
     private ModeloRepository modeloRepository;
@@ -72,11 +76,26 @@ public class ProductoService implements IProductoService {
     @Override
     @Transactional
     public void delete(Long id) {
-        // (Añadir lógica de verificación si es necesario, ej. si el producto existe)
-        if (!productoRepository.existsById(id)) {
-            throw new RuntimeException("Producto no encontrado con id: " + id);
+        // Primero, busca el producto para obtener la URL de la imagen
+        Producto producto = productoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado con id: " + id));
+
+        // Obtenemos la URL de la imagen guardada
+        String imageUrl = producto.getImagen();
+
+        // Ahora sí, eliminamos el producto de la base de datos
+        productoRepository.delete(producto);
+
+        // Después de que la BBDD se actualiza, intentamos borrar la imagen
+        if (imageUrl != null && !imageUrl.isEmpty()) {
+            try {
+                cloudinaryService.eliminarImagen(imageUrl);
+            } catch (IOException e) {
+                // Si el borrado de Cloudinary falla, al menos la transacción
+                // de la BBDD ya se completó. Solo dejamos un log.
+                System.err.println("Error al eliminar imagen de Cloudinary (ID: " + id + "): " + e.getMessage());
+            }
         }
-        productoRepository.deleteById(id);
     }
 
     // ... (findByMarcaId, findByModeloId, etc. no cambian) ...
@@ -169,6 +188,7 @@ public class ProductoService implements IProductoService {
         producto.setCategoria(categoria);
         producto.setMaterial(material);
         producto.setEtiquetas(etiquetas);
+
         producto.setImagen(dto.imagen());
     }
 
@@ -216,14 +236,15 @@ public class ProductoService implements IProductoService {
     }
 
     /**
-     * Función auxiliar recursiva para obtener todos los IDs de las categorías hijas.
+     * Función auxiliar recursiva para obtener todos los IDs de las categorías
+     * hijas.
      */
     private void findAllChildCategoryIds(Categoria categoria, Set<Long> ids) {
         ids.add(categoria.getId()); // Añadir el ID actual
 
         // Cargar hijos explícitamente para evitar problemas de LAZY loading
         List<Categoria> hijos = categoriaRepository.findAllById(
-            categoria.getHijos().stream().map(Categoria::getId).collect(Collectors.toList())
+                categoria.getHijos().stream().map(Categoria::getId).collect(Collectors.toList())
         );
 
         for (Categoria hijo : hijos) {

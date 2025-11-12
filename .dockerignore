@@ -1,0 +1,7 @@
+# Ignora archivos que no deben incluirse en el contexto de build de Docker
+.git
+.gitignore
+.idea
+.vscode
+target/
+.mvn/wrapper/maven-wrapper.jar

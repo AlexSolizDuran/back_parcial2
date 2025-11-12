@@ -6,19 +6,20 @@ FROM maven:3.9-eclipse-temurin-17 AS builder
 WORKDIR /app
 
 # Copiamos solo los archivos de build y el wrapper de Maven
-# Esto aprovecha el caché de capas de Docker.
 COPY .mvn/ .mvn
 COPY mvnw pom.xml ./
 
-# Descargamos todas las dependencias. Si pom.xml no cambia, esta capa se reutiliza.
+# --- ¡ESTA ES LA CORRECCIÓN! ---
+# Damos permisos de ejecución al script 'mvnw' antes de usarlo.
+RUN chmod +x ./mvnw
+
+# Descargamos todas las dependencias. Ahora este comando funcionará.
 RUN ./mvnw dependency:go-offline
 
 # Copiamos el resto del código fuente
 COPY src ./src
 
 # Compilamos la aplicación y creamos el .jar
-# Saltamos los tests para acelerar el build (se asume que se corren en CI/CD)
-# Tu pom.xml define el artifactId como "tienda" y la versión "0.0.1-SNAPSHOT"
 RUN ./mvnw package -DskipTests
 
 # --- ETAPA 2: EJECUCIÓN (RUNNER) ---
@@ -28,12 +29,13 @@ FROM eclipse-temurin:17-jre-focal
 WORKDIR /app
 
 # Copiamos el .jar construido de la etapa 'builder' a esta nueva imagen
-# Renombramos el .jar a app.jar por simplicidad
 COPY --from=builder /app/target/tienda-0.0.1-SNAPSHOT.jar ./app.jar
 
 # Exponemos el puerto 8080 (el puerto por defecto de Spring Boot)
-# Google Cloud Run detectará esto automáticamente.
 EXPOSE 8080
 
 # El comando para iniciar la aplicación cuando el contenedor arranque
 ENTRYPOINT ["java", "-jar", "app.jar"]
+```eof
+
+Reemplaza el contenido de tu `Dockerfile` con este código y vuelve a intentar construir la imagen. El error `Permission denied` desaparecerá.

@@ -1,14 +1,14 @@
 package com.trendora.tienda.venta.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-import com.trendora.tienda.venta.model.Venta;
-
+import java.time.LocalDateTime;
 import java.util.List;
 
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
 import com.trendora.tienda.usuario.model.Usuario;
-import java.time.LocalDateTime;
+import com.trendora.tienda.venta.model.Venta;
 
 
 
@@ -35,5 +35,10 @@ public interface VentaRepository extends JpaRepository<Venta, Long> {
     List<Venta> findByClienteAndEstadoPedido(Usuario clienteID, String estadoPedido);
 
     long countByEstadoPedido(String estadoPedido);
+
+    List<Venta> findByFechaVentaAfter(LocalDateTime fechaVenta);
+
+    // CORREGIDO: findTop5ByOrderByFechaDesc -> findTop5ByOrderByFechaVentaDesc
+    List<Venta> findTop5ByOrderByFechaVentaDesc();
 
 }

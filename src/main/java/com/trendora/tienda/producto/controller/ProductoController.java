@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,7 +34,10 @@ public class ProductoController {
     private CloudinaryService cloudinaryService;
 
     @GetMapping
-    public ResponseEntity<List<ProductoResponseDTO>> getAllProductos() {
+    public ResponseEntity<List<ProductoResponseDTO>> getAllProductos(@RequestParam(required = false) String buscar) {
+        if (buscar != null && !buscar.trim().isEmpty()) {
+            return ResponseEntity.ok(productoService.search(buscar));
+        }
         return ResponseEntity.ok(productoService.listAll());
     }
 
@@ -166,4 +170,5 @@ public class ProductoController {
     public ResponseEntity<List<ProductoResponseDTO>> getProductosByEtiquetaId(@PathVariable Long id) {
         return ResponseEntity.ok(productoService.findByEtiquetaId(id));
     }
+    
 }

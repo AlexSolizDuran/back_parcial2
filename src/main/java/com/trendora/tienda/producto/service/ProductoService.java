@@ -251,5 +251,12 @@ public class ProductoService implements IProductoService {
             findAllChildCategoryIds(hijo, ids); // Llamada recursiva
         }
     }
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProductoResponseDTO> search(String query) {
+        return productoRepository.search(query).stream()
+                .map(this::convertToResponseDTO)
+                .collect(Collectors.toList());
+    }
     // ------------------------------------
 }

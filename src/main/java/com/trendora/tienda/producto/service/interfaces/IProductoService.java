@@ -52,4 +52,5 @@ public interface IProductoService {
      * (Incluido porque la implementación lo tenía como @Override)
      */
     ProductoResponseDTO convertToResponseDTO(Producto producto);
+    List<ProductoResponseDTO> search(String query);
 }

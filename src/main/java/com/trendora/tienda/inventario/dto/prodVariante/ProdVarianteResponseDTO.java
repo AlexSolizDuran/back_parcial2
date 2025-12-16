@@ -19,4 +19,8 @@ public record ProdVarianteResponseDTO(
         Integer stock
         ) {
 
+        public boolean isLowStock() {
+        // Puedes cambiar el '5' por la cantidad que consideres crítica
+        return this.stock != null && this.stock > 0 && this.stock < 5;
+    }
 }

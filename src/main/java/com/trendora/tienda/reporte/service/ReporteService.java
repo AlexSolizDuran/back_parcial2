@@ -58,14 +58,17 @@ public class ReporteService {
         String jsonBody = "{\"prompt\": \"" + requestBody.prompt() + "\"}";
         System.out.println("Enviando cuerpo JSON manual: " + jsonBody);
         // --- FIN CAMBIO ---
-
-        try {
-            return restClient.post()
+        IaResponseDTO dato = restClient.post()
                     .uri("/generar-sql")
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(jsonBody) // <--- Enviamos la cadena String directamente
                     .retrieve()
                     .body(IaResponseDTO.class);
+        
+        System.out.println("RESPUESTA UNO : " + dato.sql());
+            
+        try {
+            return dato;
         } catch (Exception e) {
             // Captura el error y lanza una excepción más amigable para el frontend
             System.err.println("ERROR al conectar/procesar con microservicio AI: " + e.getMessage());
@@ -79,12 +82,15 @@ public class ReporteService {
     public List<Map<String, Object>> obtenerDatosTabla(String prompt) {
 
         IaResponseDTO respuestaDeIa = obtenerRespuestaDeIa(prompt);
+        System.out.println("RESPUESTA 2: " + respuestaDeIa);
+
 
         if (respuestaDeIa == null || respuestaDeIa.sql() == null || respuestaDeIa.sql().isEmpty()) {
             throw new RuntimeException("La IA no pudo generar un SQL válido.");
         }
-
-        return jdbcTemplate.queryForList(respuestaDeIa.sql());
+        List<Map<String, Object>> datos = jdbcTemplate.queryForList(respuestaDeIa.sql());
+        System.out.println(datos);
+        return datos;
     }
 
     @Transactional(readOnly = true)

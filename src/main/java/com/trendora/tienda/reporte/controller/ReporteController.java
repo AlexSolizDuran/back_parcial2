@@ -34,7 +34,7 @@ public class ReporteController {
     public ResponseEntity<List<Map<String, Object>>> obtenerDatosTabla(@RequestBody IaRequestDTO request) {
         
         List<Map<String, Object>> datos = reporteService.obtenerDatosTabla(request.prompt());
-        
+        System.out.println("RESPUESTA: " + datos);
         return ResponseEntity.ok(datos);
     }
 
